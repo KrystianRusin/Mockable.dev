@@ -6,17 +6,74 @@ import { Button, TextField, Box, Typography, Alert } from '@mui/material'
 const Signup = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [confirmEmail, setConfirmEmail] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const navigate = useNavigate()
-  const [error, setError] = useState<string | null>(null)
+
+  // New error states
+  const [usernameError, setUsernameError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [confirmEmailError, setConfirmEmailError] = useState<string | null>(null)
+  const [generalError, setGeneralError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Reset all errors
+    setUsernameError(null)
+    setPasswordError(null)
+    setEmailError(null)
+    setConfirmEmailError(null)
+    setGeneralError(null)
+
+    let hasError = false
+
+    if (password !== confirmPassword) {
+      setPasswordError('Passwords do not match')
+      hasError = true
+    }
+
+    if (email !== confirmEmail) {
+      setConfirmEmailError('Emails do not match')
+      hasError = true
+    }
+
+    if (!username) {
+      setUsernameError('Username is required')
+      hasError = true
+    }
+
+    if (!email) {
+      setEmailError('Email is required')
+      hasError = true
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setEmailError('Invalid email format')
+      hasError = true
+    }
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*]).{7,}$/
+    if (!passwordRegex.test(password)) {
+      setPasswordError('Password must be over 6 characters long, contain at least 1 capital letter and 1 symbol')
+      hasError = true
+    }
+
+    if (hasError) {
+      return
+    }
+
     try {
-      await axiosInstance.post('/signup/', { username, password })
+      await axiosInstance.post('/api/users/signup/', { username, password, email })
       navigate('/login')
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Signup failed')
+      setGeneralError(err.response?.data?.detail || 'Signup failed')
     }
+  }
+
+  const handleLogin = () => {
+    navigate('/login')
   }
 
   return (
@@ -25,7 +82,7 @@ const Signup = () => {
         <Typography variant="h4" component="h2" gutterBottom>
           Signup
         </Typography>
-        {error && <Alert severity="error">{error}</Alert>}
+        {generalError && <Alert severity="error">{generalError}</Alert>}
         <TextField
           type="text"
           label="Username"
@@ -34,6 +91,30 @@ const Signup = () => {
           required
           fullWidth
           margin="normal"
+          error={Boolean(usernameError)}
+          helperText={usernameError}
+        />
+        <TextField
+          type="text"
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          fullWidth
+          margin="normal"
+          error={Boolean(emailError)}
+          helperText={emailError}
+        />
+        <TextField
+          type="text"
+          label="Confirm Email"
+          value={confirmEmail}
+          onChange={(e) => setConfirmEmail(e.target.value)}
+          required
+          fullWidth
+          margin="normal"
+          error={Boolean(confirmEmailError)}
+          helperText={confirmEmailError}
         />
         <TextField
           type="password"
@@ -43,9 +124,25 @@ const Signup = () => {
           required
           fullWidth
           margin="normal"
+          error={Boolean(passwordError)}
+          helperText={passwordError}
+        />
+        <TextField
+          type="password"
+          label="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          fullWidth
+          margin="normal"
+          error={Boolean(passwordError)}
+          helperText={passwordError}
         />
         <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
           Signup
+        </Button>
+        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleLogin}>
+          Or Login
         </Button>
       </Box>
     </Box>

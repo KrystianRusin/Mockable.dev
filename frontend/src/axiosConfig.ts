@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000', // Adjust based on backend URL
+  baseURL: 'http://localhost:5000', 
 })
 
 // Add a request interceptor
@@ -22,7 +22,7 @@ axiosInstance.interceptors.request.use(
   }
 )
 
-// Add a response interceptor (optional)
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {

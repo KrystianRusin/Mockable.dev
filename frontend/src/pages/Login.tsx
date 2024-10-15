@@ -20,6 +20,10 @@ const Login = () => {
     }
   }
 
+  const handleSignup = () => {
+    navigate('/signup')
+  }
+
   return (
     <Box display="flex" alignItems="center" justifyContent="center" height="100vh">
       <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', maxWidth: 400 }}>
@@ -47,6 +51,9 @@ const Login = () => {
         />
         <Button type="submit" variant="contained" color="primary" disabled={loading} fullWidth sx={{ mt: 2 }}>
           {loading ? 'Logging in...' : 'Login'}
+        </Button>
+        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleSignup}>
+            Signup
         </Button>
       </Box>
     </Box>
