@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../axiosConfig.ts'
 import { Button, TextField, Box, Typography, Alert } from '@mui/material'
+import Navbar from '../components/Navbar.tsx'
 
 const Signup = () => {
   const [username, setUsername] = useState('')
@@ -76,75 +77,78 @@ const Signup = () => {
   }
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" height="100vh">
-      <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', maxWidth: 400 }}>
-        <Typography variant="h4" component="h2" gutterBottom>
-          Signup
-        </Typography>
-        {generalError && <Alert severity="error">{generalError}</Alert>}
-        <TextField
-          type="text"
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={Boolean(usernameError)}
-          helperText={usernameError}
-        />
-        <TextField
-          type="text"
-          label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={Boolean(emailError)}
-          helperText={emailError}
-        />
-        <TextField
-          type="text"
-          label="Confirm Email"
-          value={confirmEmail}
-          onChange={(e) => setConfirmEmail(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={Boolean(confirmEmailError)}
-          helperText={confirmEmailError}
-        />
-        <TextField
-          type="password"
-          label="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={Boolean(passwordError)}
-          helperText={passwordError}
-        />
-        <TextField
-          type="password"
-          label="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          fullWidth
-          margin="normal"
-          error={Boolean(passwordError)}
-          helperText={passwordError}
-        />
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-          Signup
-        </Button>
-        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleLogin}>
-          Or Login
-        </Button>
+    <>
+      <Navbar />
+      <Box display="flex" alignItems="center" justifyContent="center" height="calc(100vh - 64px)">
+        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', maxWidth: 400 }}>
+          <Typography variant="h4" component="h2" gutterBottom>
+            Signup
+          </Typography>
+          {generalError && <Alert severity="error">{generalError}</Alert>}
+          <TextField
+            type="text"
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+            error={Boolean(usernameError)}
+            helperText={usernameError}
+          />
+          <TextField
+            type="text"
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+            error={Boolean(emailError)}
+            helperText={emailError}
+          />
+          <TextField
+            type="text"
+            label="Confirm Email"
+            value={confirmEmail}
+            onChange={(e) => setConfirmEmail(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+            error={Boolean(confirmEmailError)}
+            helperText={confirmEmailError}
+          />
+          <TextField
+            type="password"
+            label="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+            error={Boolean(passwordError)}
+            helperText={passwordError}
+          />
+          <TextField
+            type="password"
+            label="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+            error={Boolean(passwordError)}
+            helperText={passwordError}
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+            Signup
+          </Button>
+          <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleLogin}>
+            Or Login
+          </Button>
+        </Box>
       </Box>
-    </Box>
+    </>
   )
 }
 
