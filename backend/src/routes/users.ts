@@ -1,6 +1,7 @@
 import express, { Router, Request, Response } from 'express';
 import User from '../models/User';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const router: Router = express.Router();
 
@@ -16,28 +17,27 @@ router.post('/signup', async (req: Request, res: Response) => {
 
     // Create a new user instance
     const newUser = new User({ username, password, email });
-    console.log("newUser", newUser);
 
     // Save the user to the database
     const savedUser = await newUser.save();
-    console.log(savedUser);
 
-    // Respond with the saved user (excluding the password)
-    const userResponse = {
-      _id: savedUser._id,
+    // Generate JWT Token
+    const payload = {
+      userId: savedUser._id,
       username: savedUser.username,
-      email: savedUser.email,
-      createdAt: savedUser.createdAt,
-      updatedAt: savedUser.updatedAt,
     };
 
-    res.status(201).json(userResponse);
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    });
+
+    res.status(201).json({ token });
   } catch (err: any) {
     console.error("Signup error:", err);
 
     // Handle Mongoose validation errors
     if (err.name === 'ValidationError') {
-      const messages = Object.values(err.errors).map(val => val.message);
+      const messages = Object.values(err.errors).map((val: any) => val.message);
       return res.status(400).json({ message: messages.join(', ') });
     }
 
@@ -45,5 +45,42 @@ router.post('/signup', async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+router.post('/login', async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+
+    // Find user by username or email
+    const user = await User.findOne({
+      $or: [{ username }, { email: username }]
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'User not found.' });
+    }
+   
+    // Check if the password is correct
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid password.' });
+    }
+
+    // Generate JWT Token
+    const payload = {
+      userId: user._id,
+      username: user.username,
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    });
+
+    res.status(200).json({ token });
+  } catch (err: any) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 
 export default router;

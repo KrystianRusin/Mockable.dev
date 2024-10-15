@@ -15,10 +15,10 @@ const Home = () => {
         return
       }
       try {
-        const response = await axiosInstance.get('/home/')
+        const response = await axiosInstance.get('/api/home')
         setMessage(response.data.message)
       } catch (err) {
-        navigate('/login')
+        // Error is handled by Axios interceptor
       }
     }
     fetchMessage()

@@ -12,7 +12,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const data = await post('/login/', { username, password })
+      const data = await post('/api/users/login', { username, password })
       localStorage.setItem('token', data.token)
       navigate('/')
     } catch (err) {
@@ -33,7 +33,7 @@ const Login = () => {
         {error && <Alert severity="error">{error}</Alert>}
         <TextField
           type="text"
-          label="Username"
+          label="Username or Email"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required

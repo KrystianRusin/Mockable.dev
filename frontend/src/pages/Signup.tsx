@@ -6,17 +6,15 @@ import { Button, TextField, Box, Typography, Alert } from '@mui/material'
 const Signup = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [email, setEmail] = useState('')
   const [confirmEmail, setConfirmEmail] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const navigate = useNavigate()
-
-  // New error states
   const [usernameError, setUsernameError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [emailError, setEmailError] = useState<string | null>(null)
   const [confirmEmailError, setConfirmEmailError] = useState<string | null>(null)
   const [generalError, setGeneralError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,10 +63,11 @@ const Signup = () => {
     }
 
     try {
-      await axiosInstance.post('/api/users/signup/', { username, password, email })
-      navigate('/login')
+      const response = await axiosInstance.post<{ token: string }>('/api/users/signup', { username, password, email })
+      localStorage.setItem('token', response.data.token)
+      navigate('/')
     } catch (err: any) {
-      setGeneralError(err.response?.data?.detail || 'Signup failed')
+      setGeneralError(err.response?.data?.message || 'Signup failed')
     }
   }
 
