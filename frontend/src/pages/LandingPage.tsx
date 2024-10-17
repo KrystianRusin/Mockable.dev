@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import Navbar from '../components/Navbar.tsx';
+import Navbar from '../components/UnauthenticatedNavbar.tsx';
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage: React.FC = () => {

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useApi from '../hooks/useApi.ts'
 import { Button, TextField, Box, Typography, Alert } from '@mui/material'
-import Navbar from '../components/Navbar.tsx'
+import Navbar from '../components/UnauthenticatedNavbar.tsx'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -15,7 +15,7 @@ const Login = () => {
     try {
       const data = await post('/api/users/login', { username, password })
       localStorage.setItem('token', data.token)
-      navigate('/')
+      navigate('/home')
     } catch (err) {
       // Error is handled inside the hook
     }

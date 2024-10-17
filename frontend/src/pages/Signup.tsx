@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../axiosConfig.ts'
 import { Button, TextField, Box, Typography, Alert } from '@mui/material'
-import Navbar from '../components/Navbar.tsx'
+import Navbar from '../components/UnauthenticatedNavbar.tsx'
 
 const Signup = () => {
   const [username, setUsername] = useState('')
@@ -66,7 +66,7 @@ const Signup = () => {
     try {
       const response = await axiosInstance.post<{ token: string }>('/api/users/signup', { username, password, email })
       localStorage.setItem('token', response.data.token)
-      navigate('/')
+      navigate('/home') 
     } catch (err: any) {
       setGeneralError(err.response?.data?.message || 'Signup failed')
     }

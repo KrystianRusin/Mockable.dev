@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../components/Navbar.tsx';
+import Navbar from '../components/UnauthenticatedNavbar.tsx';
 import { Box, Typography } from '@mui/material';
 
 const Documentation: React.FC = () => {

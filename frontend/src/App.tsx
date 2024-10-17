@@ -6,6 +6,9 @@ import ProtectedRoute from './components/ProtectedRoute.tsx'
 import LandingPage from './pages/LandingPage.tsx'
 import Pricing from './pages/Pricing.tsx'
 import Documentation from './pages/Documentation.tsx'
+import SchemaValidator from './pages/SchemaValidator.tsx'
+import AuthenticatedNavbar from './components/AuthenticatedNavbar.tsx'
+import UnauthenticatedNavbar from './components/UnauthenticatedNavbar.tsx'
 
 function App() {
   const isAuthenticated = !!localStorage.getItem('token')
@@ -22,22 +25,66 @@ function App() {
         />
 
         {/* Authentication Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/home" replace /> : <Login />}
+        />
+        <Route
+          path="/signup"
+          element={isAuthenticated ? <Navigate to="/home" replace /> : <Signup />}
+        />
 
-        {/* Protected Home Route */}
+        {/* Protected Routes */}
         <Route
           path="/home"
           element={
             <ProtectedRoute>
-              <Home />
+              <>
+                <AuthenticatedNavbar />
+                <Home />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/validate-schema"
+          element={
+            <ProtectedRoute>
+              <>
+                <AuthenticatedNavbar />
+                <SchemaValidator />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pricing"
+          element={
+            <ProtectedRoute>
+              <>
+                <AuthenticatedNavbar />
+                <Pricing />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/documentation"
+          element={
+            <ProtectedRoute>
+              <>
+                <AuthenticatedNavbar />
+                <Documentation />
+              </>
             </ProtectedRoute>
           }
         />
 
-        {/* Additional Routes (e.g., Pricing, Documentation) */}
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/documentation" element={<Documentation />} />
+        {/* Routes Accessible Without Authentication */}
+        <Route
+          path="/landing"
+          element={<UnauthenticatedNavbar />}
+        />
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" replace />} />

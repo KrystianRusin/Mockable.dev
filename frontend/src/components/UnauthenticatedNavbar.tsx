@@ -2,12 +2,22 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-const Navbar: React.FC = () => {
+const UnauthenticatedNavbar: React.FC = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        {/* Product Name */}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        {/* Brand Name */}
+        <Typography
+          variant="h6"
+          component={Link}
+          to="/"
+          sx={{
+            flexGrow: 1,
+            textDecoration: 'none',
+            color: 'inherit',
+            cursor: 'pointer',
+          }}
+        >
           Mockify.IO
         </Typography>
 
@@ -21,7 +31,7 @@ const Navbar: React.FC = () => {
           </Button>
         </Box>
 
-        {/* Login/Signup Links */}
+        {/* Login/Signup Buttons */}
         <Box sx={{ marginLeft: 2 }}>
           <Button color="inherit" component={Link} to="/login">
             Login
@@ -35,4 +45,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar;
+export default UnauthenticatedNavbar;

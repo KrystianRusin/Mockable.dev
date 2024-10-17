@@ -18,7 +18,7 @@ const Home = () => {
         const response = await axiosInstance.get('/api/home')
         setMessage(response.data.message)
       } catch (err) {
-        // Error is handled by Axios interceptor
+        
       }
     }
     fetchMessage()
