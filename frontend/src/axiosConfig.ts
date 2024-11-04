@@ -26,10 +26,10 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle response errors, e.g., token expiration
     if (error.response && error.response.status === 401) {
-      // Redirect to login or implement refresh token logic
-      window.location.href = '/login'
+      localStorage.removeItem('token')
+      // Redirect with a query parameter indicating session expiration
+      window.location.href = '/login?sessionExpired=true'
     }
     return Promise.reject(error)
   }

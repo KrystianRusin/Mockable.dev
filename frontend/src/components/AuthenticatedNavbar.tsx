@@ -31,8 +31,8 @@ const AuthenticatedNavbar: React.FC = () => {
 
         {/* Navigation Links */}
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button color="inherit" component={Link} to="/pricing">
-            Pricing
+          <Button color="inherit" component={Link} to="/endpoints">
+            Endpoints
           </Button>
           <Button color="inherit" component={Link} to="/documentation">
             Product/Documentation

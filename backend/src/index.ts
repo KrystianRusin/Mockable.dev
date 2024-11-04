@@ -8,7 +8,6 @@ import mongoose from 'mongoose';
 
 // Import Routes
 import userRoutes from './routes/users';
-import homeRoutes from './routes/home';
 
 // Initialize Environment Variables
 dotenv.config();
@@ -29,7 +28,6 @@ mongoose.connect(mongoURI)
 
 // Use Routes
 app.use('/api/users', userRoutes);
-app.use('/api', homeRoutes);
 
 // Start the Server
 const PORT: number = parseInt(process.env.PORT || '5000', 10);

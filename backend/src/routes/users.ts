@@ -2,8 +2,21 @@ import express, { Router, Request, Response } from 'express';
 import User from '../models/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+const crypto = require('crypto');
+const {v4: uuidv4} = require('uuid');
+import auth from '../middleware/auth';
 
 const router: Router = express.Router();
+
+function generateUserSlug(username: string) {
+  // Generate a UUID
+  const uuid = uuidv4();
+
+  // Create a SHA-256 hash and truncate it to, say, 8 characters
+  const hash = crypto.createHash('sha256').update(uuid).digest('hex').slice(0, 8);
+
+  return `${username.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${hash}`;
+}
 
 router.post('/signup', async (req: Request, res: Response) => {
   try {
@@ -15,11 +28,18 @@ router.post('/signup', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Username or email already exists.' });
     }
 
+    let userSlug = generateUserSlug(username);
+    while (await User.findOne({ userSlug: userSlug })) {
+      userSlug = generateUserSlug(username);
+    }
+
     // Create a new user instance
-    const newUser = new User({ username, password, email });
+    const newUser = new User({ username, password, email, userSlug: userSlug });
 
     // Save the user to the database
     const savedUser = await newUser.save();
+
+    console.log(savedUser)
 
     // Generate JWT Token
     const payload = {
@@ -31,7 +51,7 @@ router.post('/signup', async (req: Request, res: Response) => {
       expiresIn: process.env.JWT_EXPIRES_IN || '1h',
     });
 
-    res.status(201).json({ token });
+    res.status(201).json({ token, user: { username: savedUser.username, email: savedUser.email, userSlug: savedUser.userSlug } });
   } catch (err: any) {
     console.error("Signup error:", err);
 
@@ -82,5 +102,25 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
+router.get('/me', auth, async (req: Request, res: Response) => {
+  try {
+    // Access the user ID from the authenticated request
+    const userId = (req as any).user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authorized.' });
+    }
+
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.status(200).json({ user: user });
+  } catch (err: any) {
+    console.error('Me error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 export default router;

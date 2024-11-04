@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, Alert } from '@mui/material';
-import Ajv, { ErrorObject } from 'ajv';
+import _Ajv from "ajv";
+import { ErrorObject } from 'ajv';
 import ajvModule from 'ajv';
 import _addFormats from 'ajv-formats';
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const SchemaValidator: React.FC = () => {
     const [schema, setSchema] = useState('');
@@ -29,7 +31,7 @@ const SchemaValidator: React.FC = () => {
     };
      
     const handleValidate = () => {
-        const ajv = new Ajv.default()
+        const ajv = new Ajv();
         const addFormats = _addFormats as unknown as typeof _addFormats.default;
         addFormats(ajv)
         if (!schema) {
@@ -85,7 +87,7 @@ const SchemaValidator: React.FC = () => {
               <Typography variant="h6">JSON Schema</Typography>
               <TextField
                 multiline
-                rows={10} // Fixed number of rows
+                rows={10}
                 value={schema}
                 onChange={(e) => setSchema(e.target.value)}
                 variant="outlined"
@@ -111,7 +113,8 @@ const SchemaValidator: React.FC = () => {
                 sx={{
                     height: '300px',     
                     overflowY: 'auto',      
-                    resize: 'none',         
+                    resize: 'none',   
+                          
                 }}
               />
               <Button variant="outlined" component="label" sx={{ mt: 2 }}>

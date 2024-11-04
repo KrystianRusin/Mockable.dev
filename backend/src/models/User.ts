@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password: string;
   createdAt?: Date;
   updatedAt?: Date;
+  userSlug?: string;
 }
 
 const UserSchema: Schema = new Schema({
@@ -28,6 +29,11 @@ const UserSchema: Schema = new Schema({
     required: true,
     minlength: 6,
   },
+  userSlug: {
+    type: String,
+    required: true,
+    unique: true,
+  }
 }, {
   collection: 'Users',
   timestamps: true,

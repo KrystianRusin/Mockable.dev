@@ -33,9 +33,23 @@ const useApi = () => {
     }
   }
 
+  const deleteApi = async (url: string, config = {}) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await axiosInstance.delete(url, config)
+      return response.data
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'An error occurred')
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Similarly, you can add put, delete, etc.
 
-  return { loading, error, get, post }
+  return { loading, error, get, post, deleteApi }
 }
 
 export default useApi

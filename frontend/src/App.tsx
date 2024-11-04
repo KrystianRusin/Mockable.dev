@@ -4,7 +4,7 @@ import Signup from './pages/Signup.tsx'
 import Home from './pages/Home.tsx'
 import ProtectedRoute from './components/ProtectedRoute.tsx'
 import LandingPage from './pages/LandingPage.tsx'
-import Pricing from './pages/Pricing.tsx'
+import Endpoints from './pages/Endpoints.tsx'
 import Documentation from './pages/Documentation.tsx'
 import SchemaValidator from './pages/SchemaValidator.tsx'
 import AuthenticatedNavbar from './components/AuthenticatedNavbar.tsx'
@@ -58,12 +58,12 @@ function App() {
           }
         />
         <Route
-          path="/pricing"
+          path="/endpoints"
           element={
             <ProtectedRoute>
               <>
                 <AuthenticatedNavbar />
-                <Pricing />
+                <Endpoints />
               </>
             </ProtectedRoute>
           }
