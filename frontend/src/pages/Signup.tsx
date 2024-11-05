@@ -4,6 +4,8 @@ import axiosInstance from '../axiosConfig.ts'
 import { Button, TextField, Box, Typography, Alert } from '@mui/material'
 import Navbar from '../components/UnauthenticatedNavbar.tsx'
 
+import { jwtDecode } from 'jwt-decode';
+
 const Signup = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -65,7 +67,11 @@ const Signup = () => {
 
     try {
       const response = await axiosInstance.post<{ token: string }>('/api/users/signup', { username, password, email })
-      localStorage.setItem('token', response.data.token)
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      const decodedToken: { userId: string; username: string; userSlug: string; exp: number } = jwtDecode(token);
+      const { userSlug } = decodedToken;
+      localStorage.setItem('userSlug', userSlug);
       navigate('/home') 
     } catch (err: any) {
       setGeneralError(err.response?.data?.message || 'Signup failed')

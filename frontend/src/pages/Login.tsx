@@ -4,6 +4,10 @@ import useApi from '../hooks/useApi.ts'
 import { Button, TextField, Box, Typography, Alert } from '@mui/material'
 import Navbar from '../components/UnauthenticatedNavbar.tsx'
 
+import { jwtDecode } from 'jwt-decode';
+
+import axiosInstance from '../axiosConfig.ts'
+
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -13,11 +17,16 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const data = await post('/api/users/login', { username, password })
-      localStorage.setItem('token', data.token)
+      const response = await axiosInstance.post('/api/users/login', { username, password });
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      const decodedToken: { userId: string; username: string; userSlug: string; exp: number } = jwtDecode(token);
+      const { userId, userSlug } = decodedToken;
+      localStorage.setItem('userSlug', userSlug);
+      localStorage.setItem('userId', userId);
       navigate('/home')
     } catch (err) {
-      // Error is handled inside the hook
+      console.error('Failed to login:', err);
     }
   }
 

@@ -1,10 +1,12 @@
 // frontend/src/types/Endpoint.ts
 export interface Endpoint {
-  id: string;
+  _id: string; 
   name: string;
+  description?: string;
   method: string;
   url: string;
-  description?: string;
-  jsonSchema: string;
+  JSONSchema?: any;
+  LastRequest?: Date;
+  userSlug: string;
 }
 

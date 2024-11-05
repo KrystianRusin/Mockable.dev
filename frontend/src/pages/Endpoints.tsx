@@ -14,6 +14,7 @@ import { Add } from '@mui/icons-material';
 import EndpointItem from '../components/EndpointItem.tsx';
 import useApi from '../hooks/useApi.ts';
 import { Endpoint } from '../types/Endpoint.ts';
+import { jwtDecode } from 'jwt-decode';
 
 const Endpoints: React.FC = () => {
   const { get, post, deleteApi } = useApi();
@@ -26,6 +27,7 @@ const Endpoints: React.FC = () => {
     url: '',
     description: '',
     jsonSchema: '',
+    userSlug: '',
   });
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const Endpoints: React.FC = () => {
 
   const fetchEndpoints = async () => {
     try {
-      const data = await get('/api/endpoints');
+      const data = await get('/api/endpoints/all');
       setEndpoints(data.endpoints);
     } catch (err) {
       console.error('Failed to fetch endpoints:', err);
@@ -49,6 +51,7 @@ const Endpoints: React.FC = () => {
       url: '',
       description: '',
       jsonSchema: '',
+      userSlug: localStorage.getItem('userSlug') || '',
     });
     setOpen(true);
   };
@@ -64,7 +67,8 @@ const Endpoints: React.FC = () => {
       method: endpoint.method,
       url: endpoint.url,
       description: endpoint.description || '',
-      jsonSchema: endpoint.jsonSchema || '',
+      jsonSchema: endpoint.JSONSchema || '',
+      userSlug: localStorage.getItem('userSlug') ||'',
     });
     setOpen(true);
   };
@@ -73,7 +77,7 @@ const Endpoints: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this endpoint?')) {
       try {
         await deleteApi(`/api/endpoints/${id}`);
-        setEndpoints(endpoints.filter((ep) => ep.id !== id));
+        setEndpoints(endpoints.filter((ep) => ep._id !== id));
       } catch (err) {
         console.error('Failed to delete endpoint:', err);
       }
@@ -85,21 +89,39 @@ const Endpoints: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    try {
-      if (editingEndpoint) {
-        // Update existing endpoint
-        const updatedEndpoint = await post(`/api/endpoints/${editingEndpoint.id}`, formData);
-        setEndpoints(endpoints.map((ep) => (ep.id === editingEndpoint.id ? updatedEndpoint : ep)));
-      } else {
-        // Create new endpoint
-        const newEndpoint = await post('/api/endpoints', formData);
-        setEndpoints([...endpoints, newEndpoint]);
-      }
-      setOpen(false);
-    } catch (err) {
-      console.error('Failed to save endpoint:', err);
+    console.log('Form Data:', formData);
+    const userSlug = localStorage.getItem('userSlug');
+    if (!userSlug) {
+        console.error('User slug not found in local storage');
+        return;
     }
-  };
+    try {
+        if (editingEndpoint) {
+            // Update existing endpoint
+            const updatedEndpoint = await post(
+                `/api/endpoints/edit/${editingEndpoint._id}`,
+                formData
+            );
+            setEndpoints(
+                endpoints.map((ep) =>
+                    ep._id === editingEndpoint._id ? updatedEndpoint : ep
+                )
+            );
+        } else {
+            const newEndpoint = await post('/api/endpoints/create', formData);
+            setEndpoints([...endpoints, newEndpoint]);
+        }
+        setOpen(false);
+    } catch (err: any) {
+        console.error('Failed to save endpoint:', err);
+        if (err.response && err.response.data && err.response.data.message) {
+            alert(err.response.data.message);
+        } else {
+            alert('An unexpected error occurred.');
+        }
+    }
+    fetchEndpoints();
+};
 
   return (
     <Box sx={{ padding: 4 }}>
@@ -112,7 +134,7 @@ const Endpoints: React.FC = () => {
       <Box>
         {endpoints.map((endpoint) => (
           <EndpointItem
-            key={endpoint.id}
+            key={endpoint._id}
             endpoint={endpoint}
             onEdit={handleEdit}
             onDelete={handleDelete}
