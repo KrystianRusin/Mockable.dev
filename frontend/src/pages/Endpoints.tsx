@@ -76,7 +76,7 @@ const Endpoints: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this endpoint?')) {
       try {
-        await deleteApi(`/api/endpoints/${id}`);
+        await deleteApi(`/api/endpoints/delete/${id}`);
         setEndpoints(endpoints.filter((ep) => ep._id !== id));
       } catch (err) {
         console.error('Failed to delete endpoint:', err);

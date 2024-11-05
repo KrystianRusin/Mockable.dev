@@ -10,11 +10,10 @@ router.post('/create', auth, async (req: Request, res: Response) => {
     try {
         const { name,method, url, description, JSONSchema, userSlug } = req.body;
         const userId = (req as any).user.userId; 
-        console.log(url)
 
         // Query to check if the endpoint already exists for the user
         const existingEndpoint = await Endpoint.findOne({
-        URL: URL,
+        url: url,
         user: userId,
         });
         if (existingEndpoint) {
@@ -39,8 +38,25 @@ router.post('/create', auth, async (req: Request, res: Response) => {
     }
     });
 
-router.post('/edit/:id', auth, async (req: Request, res: Response) => {
+router.delete('/delete/:id', auth, async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.userId;
+        const endpointId = new mongoose.Types.ObjectId(req.params.id);
+        const deletedEndpoint = await Endpoint.findOneAndDelete({
+            _id: endpointId,
+            user: userId,
+        });
+        if (!deletedEndpoint) {
+            return res.status(404).json({ message: 'Endpoint not found' });
+        }
+        res.status(200).json({ message: 'Success' });
+    } catch (err) {
+        console.error('Failed to delete endpoint:', err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
+router.post('/edit/:id', auth, async (req: Request, res: Response) => {
     try {
         const { name, description, method, url, JSONSchema, userSlug } = req.body;
         const userId = (req as any).user.userId;

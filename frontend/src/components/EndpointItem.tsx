@@ -29,7 +29,7 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
         <IconButton color="primary" onClick={() => onEdit(endpoint)}>
           <Edit />
         </IconButton>
-        <IconButton color="error" onClick={() => onDelete(endpoint.id)}>
+        <IconButton color="error" onClick={() => onDelete(endpoint._id)}>
           <Delete />
         </IconButton>
       </CardActions>

@@ -16,7 +16,6 @@ const EndpointSchema: Schema = new Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
     },
     description: {
@@ -46,7 +45,6 @@ const EndpointSchema: Schema = new Schema({
     userSlug: {
         type: String,
         required: true,
-        unique: true,
     },
     user: {
         type: Schema.Types.ObjectId,
