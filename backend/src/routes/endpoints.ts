@@ -8,8 +8,9 @@ const router: Router = express.Router();
 
 router.post('/create', auth, async (req: Request, res: Response) => {
     try {
-        const { name,method, url, description, JSONSchema, userSlug } = req.body;
+        const {name, method, url, description, JSONSchema, userSlug } = req.body;
         const userId = (req as any).user.userId; 
+        console.log(JSONSchema)
 
         // Query to check if the endpoint already exists for the user
         const existingEndpoint = await Endpoint.findOne({

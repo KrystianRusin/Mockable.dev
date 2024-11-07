@@ -14,7 +14,9 @@ import { Add } from '@mui/icons-material';
 import EndpointItem from '../components/EndpointItem.tsx';
 import useApi from '../hooks/useApi.ts';
 import { Endpoint } from '../types/Endpoint.ts';
-import { jwtDecode } from 'jwt-decode';
+
+//TODO: Fix why JSON schema is not being correctly saved in database
+//TODO: add dynamically generated endpoints upon endpoint creation
 
 const Endpoints: React.FC = () => {
   const { get, post, deleteApi } = useApi();
@@ -26,7 +28,7 @@ const Endpoints: React.FC = () => {
     method: 'GET',
     url: '',
     description: '',
-    jsonSchema: '',
+    JSONSchema: '',
     userSlug: '',
   });
 
@@ -50,7 +52,7 @@ const Endpoints: React.FC = () => {
       method: 'GET',
       url: '',
       description: '',
-      jsonSchema: '',
+      JSONSchema: '',
       userSlug: localStorage.getItem('userSlug') || '',
     });
     setOpen(true);
@@ -67,7 +69,7 @@ const Endpoints: React.FC = () => {
       method: endpoint.method,
       url: endpoint.url,
       description: endpoint.description || '',
-      jsonSchema: endpoint.JSONSchema || '',
+      JSONSchema: endpoint.JSONSchema || '',
       userSlug: localStorage.getItem('userSlug') ||'',
     });
     setOpen(true);
@@ -202,8 +204,8 @@ const Endpoints: React.FC = () => {
             <Grid item xs={12}>
               <TextField
                 label="JSON Schema"
-                name="jsonSchema"
-                value={formData.jsonSchema}
+                name="JSONSchema"
+                value={formData.JSONSchema}
                 onChange={handleChange}
                 fullWidth
                 multiline
