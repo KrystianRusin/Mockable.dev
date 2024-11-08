@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent, Typography, IconButton, CardActions } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import React, { useState } from 'react';
+import { Card, CardContent, Typography, IconButton, CardActions, Collapse, Box } from '@mui/material';
+import { Edit, Delete, ExpandMore } from '@mui/icons-material';
 import { Endpoint } from '../types/Endpoint.ts';
 
 interface EndpointItemProps {
@@ -10,9 +10,15 @@ interface EndpointItemProps {
 }
 
 const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+
   return (
-    <Card variant="outlined" sx={{ mb: 2 }}>
-      <CardContent>
+    <Card variant="outlined" sx={{ mb: 2, position: 'relative' }}>
+      <CardContent onClick={handleExpandClick} sx={{ cursor: 'pointer' }}>
         <Typography variant="h6" component="div">
           {endpoint.name}
         </Typography>
@@ -25,14 +31,38 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
           </Typography>
         )}
       </CardContent>
-      <CardActions>
+      <CardActions disableSpacing>
+        <IconButton
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMore />
+        </IconButton>
+      </CardActions>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <IconButton color="primary" onClick={() => onEdit(endpoint)}>
           <Edit />
         </IconButton>
         <IconButton color="error" onClick={() => onDelete(endpoint._id)}>
           <Delete />
         </IconButton>
-      </CardActions>
+      </Box>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+            {endpoint.JSONSchema}
+          </Typography>
+        </CardContent>
+      </Collapse>
     </Card>
   );
 };
