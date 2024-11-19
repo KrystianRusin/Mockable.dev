@@ -5,10 +5,12 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import Endpoint from './models/Endpoint';
 
 // Import Routes
 import userRoutes from './routes/users';
 import endpointsRoutes from './routes/endpoints';
+import dynmaicRoutes from './routes/dynamic'
 
 // Initialize Environment Variables
 dotenv.config();
@@ -30,6 +32,7 @@ mongoose.connect(mongoURI)
 // Use Routes
 app.use('/api/users', userRoutes);
 app.use("/api/endpoints", endpointsRoutes);
+app.use("/api", dynmaicRoutes);
 
 // Start the Server
 const PORT: number = parseInt(process.env.PORT || '5000', 10);

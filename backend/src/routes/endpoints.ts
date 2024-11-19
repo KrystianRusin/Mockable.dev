@@ -10,7 +10,6 @@ router.post('/create', auth, async (req: Request, res: Response) => {
     try {
         const {name, method, url, description, JSONSchema, userSlug } = req.body;
         const userId = (req as any).user.userId; 
-        console.log(JSONSchema)
 
         // Query to check if the endpoint already exists for the user
         const existingEndpoint = await Endpoint.findOne({
@@ -24,8 +23,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
         // Create a new endpoint
         try {
             const newEndpoint = new Endpoint({name, description, method, url, JSONSchema, userSlug, user: userId});
-            const savedEndpoint = await newEndpoint.save();
-            console.log(savedEndpoint)
+            await newEndpoint.save();
         } catch (err) {
             console.error('Failed to create endpoint:', err);
             return res.status(500).json({ message: 'Failed to create endpoint' });
