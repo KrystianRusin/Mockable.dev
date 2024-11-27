@@ -5,7 +5,6 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import Endpoint from './models/Endpoint';
 
 // Import Routes
 import userRoutes from './routes/users';
@@ -14,6 +13,8 @@ import dynmaicRoutes from './routes/dynamic'
 
 // Initialize Environment Variables
 dotenv.config();
+
+
 
 // Initialize Express App
 const app: Application = express();

@@ -1,4 +1,5 @@
 import express, { Router, Request, Response } from 'express';
+import generateData from '../functions/handleGET';
 import Endpoint from '../models/Endpoint';
 
 const router: Router = express.Router();
@@ -20,8 +21,8 @@ router.all("/:userslug/*", async (req: Request, res: Response) => {
         if(!endpoint){
             return res.status(404).json({message: 'Endpoint not found'});
         }
-
-        res.json(endpoint.JSONSchema);
+        const data = await generateData(endpoint);
+        res.json(data);
     } catch (err) {
         console.error('Internal Server Error', err);
         res.status(500).json({message: 'Server Error'});
