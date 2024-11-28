@@ -3,6 +3,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import jsf from "json-schema-faker";
 import OpenAI from "openai";
+import redisClient from "../redisClient";
 
 const generateData = async (endpoint: IEndpoint) => {
     let JSONSchema = endpoint.JSONSchema;
@@ -18,6 +19,18 @@ const generateData = async (endpoint: IEndpoint) => {
         }
     }
 
+    const cacheKey = `endpoint:${endpoint._id}`;
+
+    try {
+        const cachedData = await redisClient.get(cacheKey);
+        if (cachedData) {
+            console.log('returning cached data');
+            return JSON.parse(cachedData);
+        }
+    } catch (err) {
+        console.error('Redis GET error: ', err);
+    }
+
     const ajv = new Ajv();
     addFormats(ajv); 
 
@@ -28,18 +41,18 @@ const generateData = async (endpoint: IEndpoint) => {
         });
 
         const response = await openai.chat.completions.create({
-            model: "gpt-4",
+            model: "gpt-3.5-turbo",
             messages: [
                 {
                     role: "system",
                     content: `
-You are a data generator that strictly adheres to the provided JSON schema. When generating data:
+                            You are a data generator that strictly adheres to the provided JSON schema. When generating data:
 
-- Ensure all properties meet the required types and constraints.
-- Pay special attention to 'oneOf', 'anyOf', and 'allOf' conditions.
-- Do not include additional properties not defined in the schema.
-- Output only the JSON data without any explanations or extra text.
-`
+                            - Ensure all properties meet the required types and constraints.
+                            - Pay special attention to 'oneOf', 'anyOf', and 'allOf' conditions.
+                            - Do not include additional properties not defined in the schema.
+                            - Output only the JSON data without any explanations or extra text.
+                            `
                 },
                 {
                     role: "user",
@@ -76,6 +89,7 @@ You are a data generator that strictly adheres to the provided JSON schema. When
         const valid = validate(data);
 
         if (valid) {
+            await redisClient.set(cacheKey, JSON.stringify(data), 'EX', 3600);
             return data; 
         } else {
             console.error(`Attempt ${attempt}: Generated data does not match JSON schema:`, validate.errors);
@@ -83,6 +97,7 @@ You are a data generator that strictly adheres to the provided JSON schema. When
                 try {
                     console.warn("Using JSF as fallback to generate data that matches the schema.");
                     const data = jsf.generate(JSONSchema);
+                    await redisClient.set(cacheKey, JSON.stringify(data), 'EX', 3600);
                     console.log("Generated data using JSF:", data);
                     return data;
                 } catch (err) {
