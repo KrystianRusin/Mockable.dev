@@ -1,6 +1,7 @@
 import Endpoint, { IEndpoint } from "../models/Endpoint";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
+import jsf from "json-schema-faker";
 import OpenAI from "openai";
 
 const generateData = async (endpoint: IEndpoint) => {
@@ -17,54 +18,80 @@ const generateData = async (endpoint: IEndpoint) => {
         }
     }
 
-    const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-            {
-                role: "system",
-                content: "You are a helpful assistant that generates data based on JSON schemas. Use any provided description for additional context if the description is not useful, then make your own assumptions based on the input schema and avoid using generic data, make the data realistic. Output only the JSON data without any additional text."
-            },
-            {
-                role: "user",
-                content: `JSON Schema: ${JSON.stringify(JSONSchema)}\nDescription: ${description}`
-            }
-        ]
-    });
-
-    const generatedContent = response.choices[0]?.message?.content;
-
-    if (!generatedContent) {
-        throw new Error('Failed to generate data');
-    }
-
-    let data;
-    try {
-        // If the response includes code blocks, extract the JSON
-        const codeBlockMatch = generatedContent.match(/```json([\s\S]*?)```/);
-        const jsonString = codeBlockMatch ? codeBlockMatch[1].trim() : generatedContent.trim();
-
-        data = JSON.parse(jsonString);
-    } catch (err) {
-        console.error('Failed to parse generated data:', err);
-        throw new Error('Generated data is not valid JSON');
-    }
-
     const ajv = new Ajv();
-    addFormats(ajv); // Add this line to include format support
+    addFormats(ajv); 
 
-    const validate = ajv.compile(JSONSchema);
-    const valid = validate(data);
+    const maxRetries = 3;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
 
-    if (!valid) {
-        console.error('Generated data does not match JSON schema:', validate.errors);
-        throw new Error('Generated data does not match JSON schema');
+        const response = await openai.chat.completions.create({
+            model: "gpt-4",
+            messages: [
+                {
+                    role: "system",
+                    content: `
+You are a data generator that strictly adheres to the provided JSON schema. When generating data:
+
+- Ensure all properties meet the required types and constraints.
+- Pay special attention to 'oneOf', 'anyOf', and 'allOf' conditions.
+- Do not include additional properties not defined in the schema.
+- Output only the JSON data without any explanations or extra text.
+`
+                },
+                {
+                    role: "user",
+                    content: `JSON Schema: ${JSON.stringify(JSONSchema)}\nDescription: ${description}`
+                }
+            ]
+        });
+
+        const generatedContent = response.choices[0]?.message?.content;
+
+        if (!generatedContent) {
+            console.error(`Attempt ${attempt}: Failed to generate data.`);
+            if (attempt === maxRetries) {
+                throw new Error('Failed to generate data after multiple attempts.');
+            }
+            continue;
+        }
+
+        let data;
+        try {
+            const codeBlockMatch = generatedContent.match(/```json([\s\S]*?)```/);
+            const jsonString = codeBlockMatch ? codeBlockMatch[1].trim() : generatedContent.trim();
+
+            data = JSON.parse(jsonString);
+        } catch (err) {
+            console.error(`Attempt ${attempt}: Failed to parse generated data`, err);
+            if (attempt === maxRetries) {
+                throw new Error('Generated data is not valid JSON.');
+            }
+            continue; 
+        }
+
+        const validate = ajv.compile(JSONSchema);
+        const valid = validate(data);
+
+        if (valid) {
+            return data; 
+        } else {
+            console.error(`Attempt ${attempt}: Generated data does not match JSON schema:`, validate.errors);
+            if (attempt === maxRetries) {
+                try {
+                    console.warn("Using JSF as fallback to generate data that matches the schema.");
+                    const data = jsf.generate(JSONSchema);
+                    console.log("Generated data using JSF:", data);
+                    return data;
+                } catch (err) {
+                    console.error("Failed to generate data using JSF:", err);
+                    throw new Error('Failed to generate data that matches the schema.');
+            }
+        }
     }
-
-    return data;
-}
+    }
+};
 
 export default generateData;
