@@ -4,8 +4,9 @@ import addFormats from "ajv-formats";
 import jsf from "json-schema-faker";
 import OpenAI from "openai";
 import redisClient from "../redisClient";
+import crypto from "crypto";
 
-const generateData = async (endpoint: IEndpoint) => {
+const generateData = async (endpoint: IEndpoint, forceRefresh = false) => {
     let JSONSchema = endpoint.JSONSchema;
     const description = endpoint.description;
 
@@ -19,16 +20,18 @@ const generateData = async (endpoint: IEndpoint) => {
         }
     }
 
-    const cacheKey = `endpoint:${endpoint._id}`;
-
-    try {
-        const cachedData = await redisClient.get(cacheKey);
-        if (cachedData) {
-            console.log('returning cached data');
-            return JSON.parse(cachedData);
+    const schemaHash = crypto.createHash('sha256').update(JSON.stringify(JSONSchema)).digest('hex');
+    const cacheKey = `endpoint:${endpoint._id}:schema:${schemaHash}`;
+    if (!forceRefresh) {
+        try {
+            const cachedData = await redisClient.get(cacheKey);
+            if (cachedData) {
+                console.log('returning cached data');
+                return JSON.parse(cachedData);
+            }
+        } catch (err) {
+            console.error('Redis GET error: ', err);
         }
-    } catch (err) {
-        console.error('Redis GET error: ', err);
     }
 
     const ajv = new Ajv();

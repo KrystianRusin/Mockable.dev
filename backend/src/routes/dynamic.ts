@@ -5,6 +5,7 @@ import Endpoint from '../models/Endpoint';
 const router: Router = express.Router();
 
 router.all("/:userslug/*", async (req: Request, res: Response) => {
+    const forceRefresh = req.query.r === 'true';
     const userSlug = req.params.userslug;
     let endpointPath = req.params[0];
 
@@ -21,7 +22,7 @@ router.all("/:userslug/*", async (req: Request, res: Response) => {
         if(!endpoint){
             return res.status(404).json({message: 'Endpoint not found'});
         }
-        const data = await generateData(endpoint);
+        const data = await generateData(endpoint, forceRefresh);
         res.json(data);
     } catch (err) {
         console.error('Internal Server Error', err);

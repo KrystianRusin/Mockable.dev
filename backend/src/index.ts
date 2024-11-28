@@ -5,7 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-
+import redisClient from './redisClient';
 // Import Routes
 import userRoutes from './routes/users';
 import endpointsRoutes from './routes/endpoints';
@@ -40,3 +40,12 @@ const PORT: number = parseInt(process.env.PORT || '5000', 10);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+process.on('SIGINT', () => {
+  redisClient.quit(() => {
+      console.log('Redis client disconnected');
+      process.exit(0);
+  });
+});
+
+
