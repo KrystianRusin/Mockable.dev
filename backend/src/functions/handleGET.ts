@@ -6,7 +6,7 @@ import OpenAI from "openai";
 import redisClient from "../redisClient";
 import crypto from "crypto";
 
-const generateData = async (endpoint: IEndpoint, forceRefresh = false) => {
+const generateGETData = async (endpoint: IEndpoint, forceRefresh = false) => {
     let JSONSchema = endpoint.JSONSchema;
     const description = endpoint.description;
 
@@ -112,4 +112,4 @@ const generateData = async (endpoint: IEndpoint, forceRefresh = false) => {
     }
 };
 
-export default generateData;
+export default generateGETData;
