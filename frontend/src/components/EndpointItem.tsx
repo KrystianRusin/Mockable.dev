@@ -58,9 +58,28 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
       </Box>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-            {endpoint.JSONSchema}
-          </Typography>
+          {/* Display Request Schema if it exists */}
+          {endpoint.requestSchema && (
+            <>
+              <Typography variant="subtitle1" gutterBottom>
+                Request Schema:
+              </Typography>
+              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                {endpoint.requestSchema}
+              </Typography>
+            </>
+          )}
+          {/* Display Response Schema */}
+          {endpoint.responseSchema && (
+            <>
+              <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+                Response Schema:
+              </Typography>
+              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                {endpoint.responseSchema}
+              </Typography>
+            </>
+          )}
         </CardContent>
       </Collapse>
     </Card>

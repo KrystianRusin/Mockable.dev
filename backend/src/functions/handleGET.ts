@@ -7,7 +7,7 @@ import redisClient from "../redisClient";
 import crypto from "crypto";
 
 const generateGETData = async (endpoint: IEndpoint, forceRefresh = false) => {
-    let JSONSchema = endpoint.JSONSchema;
+    let JSONSchema = endpoint.responseSchema;
     const description = endpoint.description;
 
     // Ensure JSONSchema is an object

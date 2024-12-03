@@ -8,7 +8,7 @@ const router: Router = express.Router();
 
 router.post('/create', auth, async (req: Request, res: Response) => {
     try {
-        const {name, method, url, description, JSONSchema, userSlug } = req.body;
+        const { name, method, url, description, requestSchema, responseSchema, userSlug } = req.body;
         const userId = (req as any).user.userId; 
 
         // Query to check if the endpoint already exists for the user
@@ -20,10 +20,20 @@ router.post('/create', auth, async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Endpoint already exists' });
         }
 
+        const newEndpoint = new Endpoint({
+            name,
+            method,
+            url,
+            description,
+            requestSchema,
+            responseSchema,
+            userSlug,
+          });
+
         // Create a new endpoint
         try {
-            const newEndpoint = new Endpoint({name, description, method, url, JSONSchema, userSlug, user: userId});
             await newEndpoint.save();
+            res.status(201).json(newEndpoint);
         } catch (err) {
             console.error('Failed to create endpoint:', err);
             return res.status(500).json({ message: 'Failed to create endpoint' });

@@ -5,7 +5,8 @@ export interface Endpoint {
   description?: string;
   method: string;
   url: string;
-  JSONSchema?: any;
+  responseSchema?: any;
+  requestSchema?: any;
   LastRequest?: Date;
   userSlug: string;
 }

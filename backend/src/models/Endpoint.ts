@@ -6,7 +6,8 @@ export interface IEndpoint extends Document {
     description?: string;
     method: string;
     url: string;
-    JSONSchema?: any;
+    requestSchema?: any;
+    responseSchema?: any;
     LastRequest?: Date;
     userSlug: string;
     user: Schema.Types.ObjectId;
@@ -33,7 +34,12 @@ const EndpointSchema: Schema = new Schema({
         required: true,
         trim: true,
     },
-    JSONSchema: {
+    requestSchema: {
+        type: Schema.Types.Mixed,
+        required: false,
+        trim: true,
+    },
+    responseSchema: {
         type: Schema.Types.Mixed,
         required: false,
         trim: true,

@@ -28,10 +28,10 @@ const Endpoints: React.FC = () => {
     method: 'GET',
     url: '',
     description: '',
-    JSONSchema: '',
-    userSlug: '',
-  });
-
+    requestSchema: '', 
+    responseSchema: '', 
+    userSlug: localStorage.getItem('userSlug') || '',
+  })
   useEffect(() => {
     fetchEndpoints();
   }, []);
@@ -52,7 +52,8 @@ const Endpoints: React.FC = () => {
       method: 'GET',
       url: '',
       description: '',
-      JSONSchema: '',
+      responseSchema: '',
+      requestSchema: '',
       userSlug: localStorage.getItem('userSlug') || '',
     });
     setOpen(true);
@@ -69,7 +70,8 @@ const Endpoints: React.FC = () => {
       method: endpoint.method,
       url: endpoint.url,
       description: endpoint.description || '',
-      JSONSchema: endpoint.JSONSchema || '',
+      responseSchema: endpoint.responseSchema || '',
+      requestSchema: endpoint.requestSchema || '',
       userSlug: localStorage.getItem('userSlug') ||'',
     });
     setOpen(true);
@@ -148,7 +150,8 @@ const Endpoints: React.FC = () => {
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>{editingEndpoint ? 'Edit Endpoint' : 'Add New Endpoint'}</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+            {/* Endpoint Name */}
             <Grid item xs={12}>
               <TextField
                 label="Endpoint Name"
@@ -159,6 +162,8 @@ const Endpoints: React.FC = () => {
                 required
               />
             </Grid>
+
+            {/* Method */}
             <Grid item xs={6}>
               <TextField
                 select
@@ -179,6 +184,8 @@ const Endpoints: React.FC = () => {
                 <option value="PATCH">PATCH</option>
               </TextField>
             </Grid>
+
+            {/* URL */}
             <Grid item xs={6}>
               <TextField
                 label="URL"
@@ -190,6 +197,8 @@ const Endpoints: React.FC = () => {
                 placeholder="/api/users"
               />
             </Grid>
+
+            {/* Description */}
             <Grid item xs={12}>
               <TextField
                 label="Description"
@@ -201,22 +210,39 @@ const Endpoints: React.FC = () => {
                 rows={3}
               />
             </Grid>
+          {/* Conditionally render Request JSON Schema */}
+          {(formData.method === 'POST' || formData.method === 'PUT' || formData.method === 'PATCH') && (
             <Grid item xs={12}>
               <TextField
-                label="JSON Schema"
-                name="JSONSchema"
-                value={formData.JSONSchema}
+                label="Request JSON Schema"
+                name="requestSchema"
+                value={formData.requestSchema}
                 onChange={handleChange}
                 fullWidth
                 multiline
                 rows={4}
                 placeholder='{"type": "object", "properties": {...}}'
-                helperText="Enter the JSON schema for the mock API response"
+                helperText="Enter the JSON schema for the request body"
                 required
               />
             </Grid>
+          )}
+          <Grid item xs={12}>
+            <TextField
+              label="Response JSON Schema"
+              name="responseSchema"
+              value={formData.responseSchema}
+              onChange={handleChange}
+              fullWidth
+              multiline
+              rows={4}
+              placeholder='{"type": "object", "properties": {...}}'
+              helperText="Enter the JSON schema for the response body"
+              required
+            />
           </Grid>
-        </DialogContent>
+        </Grid>
+      </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">
             Cancel
