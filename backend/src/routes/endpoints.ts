@@ -7,45 +7,45 @@ import mongoose from 'mongoose';
 const router: Router = express.Router();
 
 router.post('/create', auth, async (req: Request, res: Response) => {
-    try {
-        const { name, method, url, description, requestSchema, responseSchema, userSlug } = req.body;
-        const userId = (req as any).user.userId; 
+  try {
+    const { name, method, url, description, requestSchema, responseSchema, userSlug } = req.body;
+    const userId = (req as any).user.userId;
 
-        // Query to check if the endpoint already exists for the user
-        const existingEndpoint = await Endpoint.findOne({
-        url: url,
-        user: userId,
-        });
-        if (existingEndpoint) {
-            return res.status(400).json({ message: 'Endpoint already exists' });
-        }
-
-        const newEndpoint = new Endpoint({
-            name,
-            method,
-            url,
-            description,
-            requestSchema,
-            responseSchema,
-            userSlug,
-          });
-
-        // Create a new endpoint
-        try {
-            await newEndpoint.save();
-            res.status(201).json(newEndpoint);
-        } catch (err) {
-            console.error('Failed to create endpoint:', err);
-            return res.status(500).json({ message: 'Failed to create endpoint' });
-        }
-        
-
-        res.status(200).json({ message: 'Success' });
-    } catch (err: any) {
-        console.error('Endpoint error:', err);
-        res.status(500).json({ message: 'Server Error' });
-    }
+    // Check if the endpoint already exists for the user
+    const existingEndpoint = await Endpoint.findOne({
+      url,
+      user: userId,
     });
+    if (existingEndpoint) {
+      return res.status(400).json({ message: 'Endpoint already exists' });
+    }
+
+    // Create a new endpoint
+    const newEndpoint = new Endpoint({
+      name,
+      method,
+      url,
+      description,
+      requestSchema,
+      responseSchema,
+      userSlug,
+      user: userId,
+    });
+
+    await newEndpoint.save();
+    return res.status(201).json(newEndpoint);
+
+  } catch (err: any) {
+    console.error('Failed to create endpoint:', err);
+
+    if (err.name === 'ValidationError') {
+      // Handle Mongoose validation errors
+      return res.status(400).json({ message: 'Validation Error', errors: err.errors });
+    }
+
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 router.delete('/delete/:id', auth, async (req: Request, res: Response) => {
     try {
