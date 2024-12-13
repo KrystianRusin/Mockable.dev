@@ -31,6 +31,7 @@ const Endpoints: React.FC = () => {
     requestSchema: '', 
     responseSchema: '', 
     userSlug: localStorage.getItem('userSlug') || '',
+    statusCode: '200',
   })
   useEffect(() => {
     fetchEndpoints();
@@ -55,6 +56,7 @@ const Endpoints: React.FC = () => {
       responseSchema: '',
       requestSchema: '',
       userSlug: localStorage.getItem('userSlug') || '',
+      statusCode: '200',
     });
     setOpen(true);
   };
@@ -73,6 +75,7 @@ const Endpoints: React.FC = () => {
       responseSchema: endpoint.responseSchema || '',
       requestSchema: endpoint.requestSchema || '',
       userSlug: localStorage.getItem('userSlug') ||'',
+      statusCode: endpoint.statusCode.toString(),
     });
     setOpen(true);
   };
@@ -127,89 +130,119 @@ const Endpoints: React.FC = () => {
     fetchEndpoints();
 };
 
-  return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Your Mock API Endpoints
-      </Typography>
-      <Button variant="contained" startIcon={<Add />} onClick={handleOpen} sx={{ mb: 3 }}>
-        Add Endpoint
-      </Button>
-      <Box>
-        {endpoints.map((endpoint) => (
-          <EndpointItem
-            key={endpoint._id}
-            endpoint={endpoint}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        ))}
-      </Box>
+return (
+  <Box sx={{ padding: 4 }}>
+    <Typography variant="h4" gutterBottom>
+      Your Mock API Endpoints
+    </Typography>
+    <Button variant="contained" startIcon={<Add />} onClick={handleOpen} sx={{ mb: 3 }}>
+      Add Endpoint
+    </Button>
+    <Box>
+      {endpoints.map((endpoint) => (
+        <EndpointItem
+          key={endpoint._id}
+          endpoint={endpoint}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ))}
+    </Box>
 
-      {/* Add/Edit Endpoint Dialog */}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>{editingEndpoint ? 'Edit Endpoint' : 'Add New Endpoint'}</DialogTitle>
-        <DialogContent>
+    {/* Add/Edit Endpoint Dialog */}
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+      <DialogTitle>{editingEndpoint ? 'Edit Endpoint' : 'Add New Endpoint'}</DialogTitle>
+      <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-            {/* Endpoint Name */}
-            <Grid item xs={12}>
-              <TextField
-                label="Endpoint Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
-            </Grid>
+          {/* Endpoint Name */}
+          <Grid item xs={12}>
+            <TextField
+              label="Endpoint Name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+          </Grid>
 
-            {/* Method */}
-            <Grid item xs={6}>
-              <TextField
-                select
-                label="Method"
-                name="method"
-                value={formData.method}
-                onChange={handleChange}
-                SelectProps={{
-                  native: true,
-                }}
-                fullWidth
-                required
-              >
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-                <option value="PUT">PUT</option>
-                <option value="DELETE">DELETE</option>
-                <option value="PATCH">PATCH</option>
-              </TextField>
-            </Grid>
+          {/* Method */}
+          <Grid item xs={6}>
+            <TextField
+              select
+              label="Method"
+              name="method"
+              value={formData.method}
+              onChange={handleChange}
+              SelectProps={{
+                native: true,
+              }}
+              fullWidth
+              required
+            >
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+              <option value="PATCH">PATCH</option>
+            </TextField>
+          </Grid>
 
-            {/* URL */}
-            <Grid item xs={6}>
-              <TextField
-                label="URL"
-                name="url"
-                value={formData.url}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="/api/users"
-              />
-            </Grid>
+          {/* URL */}
+          <Grid item xs={6}>
+            <TextField
+              label="URL"
+              name="url"
+              value={formData.url}
+              onChange={handleChange}
+              fullWidth
+              required
+              placeholder="/api/users"
+            />
+          </Grid>
 
-            {/* Description */}
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                fullWidth
-                multiline
-                rows={3}
-              />
-            </Grid>
+          {/* Description */}
+          <Grid item xs={12}>
+            <TextField
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              fullWidth
+              multiline
+              rows={3}
+            />
+          </Grid>
+
+          {/* Status Code */}
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Status Code"
+              name="statusCode"
+              value={formData.statusCode}
+              onChange={handleChange}
+              SelectProps={{
+                native: true,
+              }}
+              fullWidth
+              required
+              helperText="Select the HTTP status code this endpoint should return"
+            >
+              <option value={200}>200 - OK</option>
+              <option value={201}>201 - Created</option>
+              <option value={202}>202 - Accepted</option>
+              <option value={204}>204 - No Content</option>
+              <option value={400}>400 - Bad Request</option>
+              <option value={401}>401 - Unauthorized</option>
+              <option value={403}>403 - Forbidden</option>
+              <option value={404}>404 - Not Found</option>
+              <option value={409}>409 - Conflict</option>
+              <option value={422}>422 - Unprocessable Entity</option>
+              <option value={500}>500 - Internal Server Error</option>
+            </TextField>
+          </Grid>
+
           {/* Conditionally render Request JSON Schema */}
           {(formData.method === 'POST' || formData.method === 'PUT' || formData.method === 'PATCH') && (
             <Grid item xs={12}>
@@ -243,17 +276,17 @@ const Endpoints: React.FC = () => {
           </Grid>
         </Grid>
       </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
-            {editingEndpoint ? 'Update' : 'Create'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
-  );
+      <DialogActions>
+        <Button onClick={handleClose} color="secondary">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">
+          {editingEndpoint ? 'Update' : 'Create'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </Box>
+);
 };
 
 export default Endpoints;

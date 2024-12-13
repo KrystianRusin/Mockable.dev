@@ -34,7 +34,7 @@ const generateGETData = async (endpoint: IEndpoint, forceRefresh = false) => {
         }
     }
 
-    const ajv = new Ajv();
+    const ajv = new Ajv({strict: false});
     addFormats(ajv); 
 
     const maxRetries = 3;

@@ -11,6 +11,7 @@ export interface IEndpoint extends Document {
     LastRequest?: Date;
     userSlug: string;
     user: Schema.Types.ObjectId;
+    statusCode?: number;
 }
 
 const EndpointSchema: Schema = new Schema({
@@ -56,6 +57,10 @@ const EndpointSchema: Schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
+    },
+    statusCode: {
+        type: Number,
+        default: 200,
     }
 }, {
     collection: 'Endpoints',

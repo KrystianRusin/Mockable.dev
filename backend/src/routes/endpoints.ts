@@ -8,7 +8,7 @@ const router: Router = express.Router();
 
 router.post('/create', auth, async (req: Request, res: Response) => {
   try {
-    const { name, method, url, description, requestSchema, responseSchema, userSlug } = req.body;
+    const { name, method, url, description, requestSchema, responseSchema, userSlug, statusCode } = req.body;
     const userId = (req as any).user.userId;
 
     // Check if the endpoint already exists for the user
@@ -30,6 +30,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
       responseSchema,
       userSlug,
       user: userId,
+      statusCode
     });
 
     await newEndpoint.save();
@@ -39,7 +40,6 @@ router.post('/create', auth, async (req: Request, res: Response) => {
     console.error('Failed to create endpoint:', err);
 
     if (err.name === 'ValidationError') {
-      // Handle Mongoose validation errors
       return res.status(400).json({ message: 'Validation Error', errors: err.errors });
     }
 
@@ -67,7 +67,7 @@ router.delete('/delete/:id', auth, async (req: Request, res: Response) => {
 
 router.post('/edit/:id', auth, async (req: Request, res: Response) => {
     try {
-        const { name, description, method, url, JSONSchema, userSlug } = req.body;
+        const { name, description, method, url, JSONSchema, userSlug, statusCode } = req.body;
         const userId = (req as any).user.userId;
         const endpointId = new mongoose.Types.ObjectId(req.params.id);
         const existingEndpoint = await Endpoint.findOne({
@@ -82,7 +82,7 @@ router.post('/edit/:id', auth, async (req: Request, res: Response) => {
         // Update the endpoint
         const updatedEndpoint = await Endpoint.findByIdAndUpdate
         (endpointId, 
-        { name, description, method, url, JSONSchema, userSlug }, 
+        { name, description, method, url, JSONSchema, userSlug, statusCode }, 
         );
 
         if (!updatedEndpoint) {

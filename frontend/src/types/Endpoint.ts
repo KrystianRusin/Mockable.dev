@@ -9,5 +9,6 @@ export interface Endpoint {
   requestSchema?: any;
   LastRequest?: Date;
   userSlug: string;
+  statusCode: number;
 }
 
