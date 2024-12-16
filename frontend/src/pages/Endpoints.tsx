@@ -184,7 +184,6 @@ return (
               <option value="POST">POST</option>
               <option value="PUT">PUT</option>
               <option value="DELETE">DELETE</option>
-              <option value="PATCH">PATCH</option>
             </TextField>
           </Grid>
 
@@ -244,7 +243,7 @@ return (
           </Grid>
 
           {/* Conditionally render Request JSON Schema */}
-          {(formData.method === 'POST' || formData.method === 'PUT' || formData.method === 'PATCH') && (
+          {(formData.method === 'POST' || formData.method === 'PUT') && (
             <Grid item xs={12}>
               <TextField
                 label="Request JSON Schema"
