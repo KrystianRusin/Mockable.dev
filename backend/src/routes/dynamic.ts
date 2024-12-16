@@ -2,6 +2,7 @@ import express, { Router, Request, Response } from 'express';
 import generateGETData from '../functions/handleGET';
 import generatePOSTData from '../functions/handlePOST';
 import generatePUTData from '../functions/handlePUT';
+import generateDELETEData from '../functions/handleDELETE';
 import Endpoint from '../models/Endpoint';
 
 const router: Router = express.Router();
@@ -103,4 +104,36 @@ router.put("/:userslug/*", async (req: Request, res: Response) => {
       }
   }
 });
+
+router.delete("/:userslug/*", async (req: Request, res: Response) => {
+    const userSlug = req.params.userslug;
+    const endpointPath = req.params[0] || '';
+    const url = "/" + endpointPath;
+    const method = req.method.toUpperCase();
+  
+    try {
+      const endpoint = await Endpoint.findOne({ userSlug, url, method });
+      if (!endpoint) {
+        return res.status(404).json({ message: 'Endpoint not found' });
+      }
+  
+      console.log('Found endpoint:', endpoint);
+  
+      const statusCode = endpoint.statusCode || 200;
+      if (statusCode >= 200 && statusCode < 300) {
+        const data = await generateDELETEData(endpoint, req.query.forceRefresh === 'true');
+        return res.status(statusCode).json(data);
+      } else {
+        return res.status(statusCode).json({
+          message: `Error response with status code ${statusCode}.`
+        });
+      }
+    } catch (err: any) {
+      console.error('Error handling DELETE request:', err.message, err.stack);
+      res.status(500).json({ message: 'Server Error' });
+    }
+  });
+  
+
+
 export default router;

@@ -14,6 +14,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
     // Check if the endpoint already exists for the user
     const existingEndpoint = await Endpoint.findOne({
       url,
+      method,
       user: userId,
     });
     if (existingEndpoint) {
@@ -67,12 +68,13 @@ router.delete('/delete/:id', auth, async (req: Request, res: Response) => {
 
 router.post('/edit/:id', auth, async (req: Request, res: Response) => {
     try {
-        const { name, description, method, url, JSONSchema, userSlug, statusCode } = req.body;
+        const { name, description, method, url, responseSchema, requestSchema, userSlug, statusCode } = req.body;
         const userId = (req as any).user.userId;
         const endpointId = new mongoose.Types.ObjectId(req.params.id);
         const existingEndpoint = await Endpoint.findOne({
             url: url,
             user: userId,
+            method: method,
             _id: { $ne: endpointId },
         });
         if (existingEndpoint) {
@@ -82,7 +84,7 @@ router.post('/edit/:id', auth, async (req: Request, res: Response) => {
         // Update the endpoint
         const updatedEndpoint = await Endpoint.findByIdAndUpdate
         (endpointId, 
-        { name, description, method, url, JSONSchema, userSlug, statusCode }, 
+        { name, description, method, url, responseSchema, requestSchema, userSlug, statusCode }, 
         );
 
         if (!updatedEndpoint) {

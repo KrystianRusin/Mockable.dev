@@ -27,7 +27,7 @@ const auth = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 
     next();
   } catch (err) {
-    console.error("Token verification failed:", err);
+    console.error("Token verification failed:");
     res.status(401).json({ message: 'Token is not valid.' });
   }
 };
