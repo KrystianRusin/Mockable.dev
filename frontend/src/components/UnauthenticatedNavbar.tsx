@@ -18,7 +18,7 @@ const UnauthenticatedNavbar: React.FC = () => {
             cursor: 'pointer',
           }}
         >
-          Mockify.IO
+          Mockable.dev
         </Typography>
 
         {/* Navigation Links */}

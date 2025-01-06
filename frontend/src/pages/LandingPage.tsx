@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
         sx={{ padding: 2 }}
       >
         <Typography variant="h3" gutterBottom>
-          Welcome to Mockify.IO
+          Welcome to Mockable.dev
         </Typography>
         <Typography variant="h6" gutterBottom>
           Your ultimate solution for creating realistic mock APIs.
