@@ -18,6 +18,11 @@ function generateUserSlug(username: string) {
   return `${username.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${hash}`;
 }
 
+router.get('/test', auth, async (req: Request, res: Response) => {
+  console.log("Test route hit");
+  res.status(200).json({ message: 'Test route working' });
+});
+
 router.post('/signup', async (req: Request, res: Response) => {
   try {
     const { username, password, email } = req.body;
