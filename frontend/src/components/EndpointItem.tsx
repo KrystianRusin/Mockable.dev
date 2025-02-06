@@ -1,7 +1,34 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, IconButton, CardActions, Collapse, Box } from '@mui/material';
-import { Edit, Delete, ExpandMore } from '@mui/icons-material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  CardActions,
+  Collapse,
+  Box,
+} from '@mui/material';
+import { Edit, Delete, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
+import { IconButtonProps } from '@mui/material';
 import { Endpoint } from '../types/Endpoint.ts';
+
+// Extend IconButtonProps to include the custom "expand" prop.
+interface ExpandMoreProps extends IconButtonProps {
+  expand: boolean;
+}
+
+// Create a styled component for the expand button.
+const ExpandMore = styled((props: ExpandMoreProps) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+  marginLeft: 'auto',
+  transition: theme.transitions.create('transform', {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
 
 interface EndpointItemProps {
   endpoint: Endpoint;
@@ -13,16 +40,25 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
   const [expanded, setExpanded] = useState(false);
 
   const handleExpandClick = () => {
-    setExpanded(!expanded);
+    setExpanded((prev) => !prev);
   };
 
   return (
-    <Card variant="outlined" sx={{ mb: 2, position: 'relative' }}>
+    <Card
+      variant="outlined"
+      sx={{
+        mb: 2,
+        position: 'relative',
+        borderRadius: 2,
+        transition: 'box-shadow 0.3s',
+        '&:hover': { boxShadow: 6 },
+      }}
+    >
       <CardContent onClick={handleExpandClick} sx={{ cursor: 'pointer' }}>
         <Typography variant="h6" component="div">
           {endpoint.name}
         </Typography>
-        <Typography color="text.secondary">
+        <Typography variant="body2" color="text.secondary">
           {endpoint.method} {endpoint.url}
         </Typography>
         {endpoint.description && (
@@ -31,15 +67,19 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
           </Typography>
         )}
       </CardContent>
+
       <CardActions disableSpacing>
-        <IconButton
+        <ExpandMore
+          expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <ExpandMore />
-        </IconButton>
+          <ExpandMoreIcon />
+        </ExpandMore>
       </CardActions>
+
+      {/* Action Icons positioned in the top-right */}
       <Box
         sx={{
           position: 'absolute',
@@ -47,6 +87,7 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
           right: 16,
           display: 'flex',
           flexDirection: 'column',
+          gap: 1,
         }}
       >
         <IconButton color="primary" onClick={() => onEdit(endpoint)}>
@@ -56,26 +97,31 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
           <Delete />
         </IconButton>
       </Box>
+
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {/* Display Request Schema if it exists */}
           {endpoint.requestSchema && (
             <>
               <Typography variant="subtitle1" gutterBottom>
                 Request Schema:
               </Typography>
-              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+              <Typography
+                variant="body2"
+                sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
+              >
                 {endpoint.requestSchema}
               </Typography>
             </>
           )}
-          {/* Display Response Schema */}
           {endpoint.responseSchema && (
             <>
               <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
                 Response Schema:
               </Typography>
-              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+              <Typography
+                variant="body2"
+                sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
+              >
                 {endpoint.responseSchema}
               </Typography>
             </>
