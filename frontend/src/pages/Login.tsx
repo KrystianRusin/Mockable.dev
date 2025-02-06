@@ -1,48 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField, Box, Typography, Alert, Paper } from '@mui/material';
-import UnauthenticatedNavbar from '../components/UnauthenticatedNavbar.tsx';
 import axiosInstance from '../axiosConfig.ts';
-import {jwtDecode} from 'jwt-decode';
-
-interface DecodedToken {
-  userId: string;
-  username: string;
-  userSlug: string;
-  exp: number;
-}
+import { Button, TextField, Box, Typography, Alert, Paper, IconButton } from '@mui/material';
+import Navbar from '../components/UnauthenticatedNavbar.tsx';
+import { jwtDecode } from 'jwt-decode';
+import { FcGoogle } from 'react-icons/fc';
 
 const Login = () => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(''); // Reset any previous error
+    setError('');
     setLoading(true);
     try {
       const response = await axiosInstance.post('/api/users/login', { username, password });
       const { token } = response.data;
-      
-      // Save token and decode user details
       localStorage.setItem('token', token);
-      const decodedToken: DecodedToken = jwtDecode(token);
+      const decodedToken: { userId: string; username: string; userSlug: string; exp: number } = jwtDecode(token);
       localStorage.setItem('userSlug', decodedToken.userSlug);
-      localStorage.setItem('userId', decodedToken.userId);
-      
       navigate('/home');
     } catch (err: any) {
       console.error('Failed to login:', err);
       if (err.response && err.response.data && err.response.data.message) {
-        const serverError = err.response.data.message;
-        if (serverError === 'User not found.') {
-          setError("We couldn't find an account with that username or email. Please consider signing up.");
-        } else {
-          setError(serverError);
-        }
+        setError(err.response.data.message);
       } else {
         setError('An unexpected error occurred. Please try again later.');
       }
@@ -55,16 +40,19 @@ const Login = () => {
     navigate('/signup');
   };
 
+  const handleGoogleSignIn = () => {
+    window.location.href = '/api/users/google';
+  };
   return (
     <>
-      <UnauthenticatedNavbar />
+      <Navbar />
       <Box
         display="flex"
         alignItems="center"
         justifyContent="center"
         height="calc(100vh - 64px)"
         sx={{
-          background: 'linear-gradient(135deg, #ece9e6, #ffffff)', // Updated background gradient
+          background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
         }}
         p={2}
       >
@@ -72,11 +60,7 @@ const Login = () => {
           <Typography variant="h4" component="h2" gutterBottom align="center">
             Login
           </Typography>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
+          {error && <Alert severity="error">{error}</Alert>}
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               type="text"
@@ -96,23 +80,20 @@ const Login = () => {
               fullWidth
               margin="normal"
             />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={loading}
-              fullWidth
-              sx={{ mt: 2 }}
-            >
+            <Button type="submit" variant="contained" color="primary" disabled={loading} fullWidth sx={{ mt: 2 }}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
+            {/* Google Icon - Clickable Icon Only */}
+            <IconButton onClick={handleGoogleSignIn} sx={{ mt: 2, display: 'block', mx: 'auto' }}>
+              <FcGoogle size={24} />
+            </IconButton>
+            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+              Don't have an account?{' '}
+              <Button variant="text" onClick={handleSignup} sx={{ textTransform: 'none' }}>
+                Signup
+              </Button>
+            </Typography>
           </Box>
-          <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-            Don&apos;t have an account?{' '}
-            <Button onClick={handleSignup} sx={{ textTransform: 'none' }}>
-              Sign Up
-            </Button>
-          </Typography>
         </Paper>
       </Box>
     </>

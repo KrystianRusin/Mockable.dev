@@ -1,20 +1,22 @@
 // src/index.ts
 
+
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import redisClient from './redisClient';
+
 // Import Routes
 import userRoutes from './routes/users';
 import endpointsRoutes from './routes/endpoints';
-import dynmaicRoutes from './routes/dynamic'
+import dynmaicRoutes from './routes/dynamic';
 
 // Initialize Environment Variables
 dotenv.config();
 
-
+import './config/passportConfig';
 
 // Initialize Express App
 const app: Application = express();
@@ -47,5 +49,3 @@ process.on('SIGINT', () => {
       process.exit(0);
   });
 });
-
-

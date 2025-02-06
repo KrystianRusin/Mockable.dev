@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig.ts';
-import { Button, TextField, Box, Typography, Alert, Paper } from '@mui/material';
+import { Button, TextField, Box, Typography, Alert, Paper, IconButton } from '@mui/material';
 import Navbar from '../components/UnauthenticatedNavbar.tsx';
 import { jwtDecode } from 'jwt-decode';
+import { FcGoogle } from 'react-icons/fc';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -90,6 +91,11 @@ const Signup = () => {
     navigate('/login');
   };
 
+  // Google Sign In handler: redirect to the backend endpoint for Google OAuth.
+  const handleGoogleSignIn = () => {
+    window.location.href = '/api/users/google';
+  };
+
   return (
     <>
       <Navbar />
@@ -99,7 +105,7 @@ const Signup = () => {
         justifyContent="center"
         height="calc(100vh - 64px)"
         sx={{
-          background: 'linear-gradient(135deg, #ece9e6, #ffffff)', // Updated background gradient
+          background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
         }}
         p={2}
       >
@@ -167,6 +173,10 @@ const Signup = () => {
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
               Signup
             </Button>
+            {/* Google Icon - Clickable Icon Only */}
+            <IconButton onClick={handleGoogleSignIn} sx={{ mt: 2, display: 'block', mx: 'auto' }}>
+              <FcGoogle size={24} />
+            </IconButton>
             <Typography variant="body2" align="center" sx={{ mt: 2 }}>
               Already have an account?{' '}
               <Button onClick={handleLogin} sx={{ textTransform: 'none', p: 0, minWidth: 'unset' }}>

@@ -6,4 +6,11 @@ declare global {
       user?: User; // Replace 'User' with your actual user type
     }
   }
+
+  export interface Request {
+    user?: {
+      userId: string;
+      username: string;
+    };
+  }
 }
