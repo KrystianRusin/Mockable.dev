@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig.ts';
@@ -6,7 +7,7 @@ import Navbar from '../components/UnauthenticatedNavbar.tsx';
 import { jwtDecode } from 'jwt-decode';
 import { FcGoogle } from 'react-icons/fc';
 
-const Signup = () => {
+const Signup: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -35,17 +36,14 @@ const Signup = () => {
       setPasswordError('Passwords do not match');
       hasError = true;
     }
-
     if (email !== confirmEmail) {
       setConfirmEmailError('Emails do not match');
       hasError = true;
     }
-
     if (!username) {
       setUsernameError('Username is required');
       hasError = true;
     }
-
     if (!email) {
       setEmailError('Email is required');
       hasError = true;
@@ -66,12 +64,22 @@ const Signup = () => {
     }
 
     try {
-      const response = await axiosInstance.post<{ token: string }>('/api/users/signup', { username, password, email });
-      const { token } = response.data;
-      localStorage.setItem('token', token);
-      const decodedToken: { userId: string; username: string; userSlug: string; exp: number } = jwtDecode(token);
-      localStorage.setItem('userSlug', decodedToken.userSlug);
-      navigate('/home');
+      const response = await axiosInstance.post<{ mfaRequired: boolean; token: string }>('/api/users/signup', { username, password, email });
+
+      const { mfaRequired, token } = response.data;
+      console.log("Signup response:", response.data);
+      console.log("token:", token)
+      if (mfaRequired) {
+        // Redirect to MFA page with the pre-MFA token
+        
+        navigate(`/mfa?token=${token}`);
+      } else {
+        // In case MFA is not required (this branch may not be reached if MFA is always enabled)
+        localStorage.setItem('token', token);
+        const decodedToken: { userSlug: string } = jwtDecode(token);
+        localStorage.setItem('userSlug', decodedToken.userSlug);
+        navigate('/home');
+      }
     } catch (err: any) {
       console.error("Signup error:", err);
       if (err.response && err.response.data && err.response.data.message) {
@@ -91,7 +99,6 @@ const Signup = () => {
     navigate('/login');
   };
 
-  // Google Sign In handler: redirect to the backend endpoint for Google OAuth.
   const handleGoogleSignIn = () => {
     window.location.href = '/api/users/google';
   };
@@ -104,9 +111,7 @@ const Signup = () => {
         alignItems="center"
         justifyContent="center"
         height="calc(100vh - 64px)"
-        sx={{
-          background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
-        }}
+        sx={{ background: 'linear-gradient(135deg, #ece9e6, #ffffff)' }}
         p={2}
       >
         <Paper elevation={3} sx={{ width: '100%', maxWidth: 400, p: 4 }}>

@@ -29,7 +29,6 @@ const Mfa: React.FC = () => {
     const tokenFromUrl = params.get('token');
     if (tokenFromUrl) {
       localStorage.setItem('token', tokenFromUrl);
-      // Clean up the URL by removing query params.
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);

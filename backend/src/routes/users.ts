@@ -112,7 +112,8 @@ router.post('/signup', async (req: Request, res: Response) => {
       expiresIn: '10m', 
     });
     res.status(201).json({
-      preMfaToken,
+      mfaRequired: true, 
+      token: preMfaToken,
       user: { username: savedUser.username, email: savedUser.email, userSlug: savedUser.userSlug }
     });
   } catch (err: any) {
