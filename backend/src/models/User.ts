@@ -5,9 +5,9 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
+  userSlug: string;
   createdAt?: Date;
   updatedAt?: Date;
-  userSlug?: string;
 }
 
 const UserSchema: Schema = new Schema({
@@ -33,7 +33,7 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
     unique: true,
-  }
+  },
 }, {
   collection: 'Users',
   timestamps: true,

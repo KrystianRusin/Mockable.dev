@@ -19,11 +19,16 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.post('/api/users/login', { username, password });
-      const { token } = response.data;
-      localStorage.setItem('token', token);
-      const decodedToken: { userId: string; username: string; userSlug: string; exp: number } = jwtDecode(token);
-      localStorage.setItem('userSlug', decodedToken.userSlug);
-      navigate('/home');
+      const { mfaRequired, token } = response.data;
+    
+      if (mfaRequired) {
+        navigate(`/mfa?token=${token}`)
+      } else {
+        localStorage.setItem('token', token);
+        const decodedToken: {userSlug: string} = jwtDecode(token)
+        localStorage.setItem('userSlug', decodedToken.userSlug)
+        navigate('home')
+      }
     } catch (err: any) {
       console.error('Failed to login:', err);
       if (err.response && err.response.data && err.response.data.message) {

@@ -3,12 +3,80 @@ import express, { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
-import generateUserSlug from '../utils/generateUserSlug';
+import generateUserSlug from '../functions/generateUserSlug';
+import { generateOTP } from '../functions/generateOTP';
+import { sendOTPEmail } from '../services/emailService';
 import auth from '../middleware/auth';
 import { AuthenticatedRequest } from '../middleware/auth';
+import redisClient from '../redisClient';
 
 const router: Router = express.Router();
 
+router.post('/request-otp', auth, async (req: Request, res: Response) => {
+  console.log("request for otp received")
+  try{
+    
+    const {email} = req.body;
+    
+    // Get 6-digit OTP
+    const otp = generateOTP();
+
+    await redisClient.set(`otp:${email}`, otp, 'EX', 300)
+
+    await sendOTPEmail(email, otp)
+
+    res.status(200).json({message: "OTP sent to email"})
+  } catch (error) {
+    console.error('Error in request-otp', error);
+    res.status(500).json({message: 'Server error while requesting OTP.'});
+  }
+})
+
+router.post('/verify-otp', auth, async(req:Request, res:Response) => {
+  try {
+    
+    const { email, otp } = req.body;
+    console.log(otp)
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required." });
+    }
+
+    // Retrieve and validate OTP
+    const storedOtp = await redisClient.get(`otp:${email}`);
+    console.log(storedOtp)
+    if (!storedOtp) {
+      return res.status(400).json({ message: "OTP not requested or expired." });
+    }
+
+    if(storedOtp != otp) {
+      return res.status(400).json({ message: "OTP Invalid." });
+    }
+
+    // OTP is valid so we delete it from Redis
+    await redisClient.del(`otp:${email}`);
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const payload = {
+      userId: user._id,
+      username: user.username,
+      userSlug: user.userSlug,
+      email: user.email
+    };
+
+    const token = jwt.sign({ ...payload, mfa: true }, process.env.JWT_SECRET as string, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    });
+
+    res.status(200).json({token})
+  } catch (error){
+    console.log("Erorr in verify-otp", error)
+    res.status(500).json({message: 'Server error while requesting OTP.'});
+  }
+})
 
 router.post('/signup', async (req: Request, res: Response) => {
   try {
@@ -35,16 +103,16 @@ router.post('/signup', async (req: Request, res: Response) => {
     // Generate JWT Token
     const payload = {
       userId: savedUser._id,
+      email: savedUser.email,
       username: savedUser.username,
       userSlug: savedUser.userSlug,
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    const preMfaToken = jwt.sign({ ...payload, mfa: false }, process.env.JWT_SECRET as string, {
+      expiresIn: '10m', 
     });
-
     res.status(201).json({
-      token,
+      preMfaToken,
       user: { username: savedUser.username, email: savedUser.email, userSlug: savedUser.userSlug }
     });
   } catch (err: any) {
@@ -69,13 +137,14 @@ router.post('/login', (req: Request, res: Response, next: NextFunction) => {
     }
     const payload = {
       userId: user._id,
+      email: user.email,
       username: user.username,
       userSlug: user.userSlug,
     };
-    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    const preMfaToken = jwt.sign({ ...payload, mfa: false}, process.env.JWT_SECRET as string, {
+      expiresIn: '10m', 
     });
-    return res.status(200).json({ token });
+    return res.status(200).json({ mfaRequired: true, token: preMfaToken });
   })(req, res, next);
 });
 

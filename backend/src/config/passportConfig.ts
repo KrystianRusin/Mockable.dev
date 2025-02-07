@@ -4,7 +4,7 @@ import { Strategy as GoogleStrategy, Profile, StrategyOptions, StrategyOptionsWi
 import { Strategy as LocalStrategy, IStrategyOptions as LocalStrategyOption } from 'passport-local';
 import bcrypt from 'bcrypt';
 import User, { IUser } from '../models/User';
-import generateUserSlug from '../utils/generateUserSlug';
+import generateUserSlug from '../functions/generateUserSlug';
 
 passport.use(
   new GoogleStrategy(
