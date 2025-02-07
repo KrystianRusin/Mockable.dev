@@ -180,7 +180,7 @@ Usage
     -   Navigate to the signup or login pages.
     -   Use local authentication or click the Google icon to authenticate via Google OAuth.
     -   For local login, if MFA is enabled, you will be redirected to the MFA page to verify your email OTP.
-2.  **MFA Flow (if enabled):**
+2.  **MFA Flow:**
 
     -   After a local login, you will be redirected to an MFA page where an OTP is sent to your registered email.
     -   Enter the OTP to complete the authentication process.
