@@ -195,13 +195,13 @@ Usage
 Future Improvements
 -------------------
 
--   **Enhanced MFA:**\
-    Integrate Redis (or another caching solution) to securely store OTPs with automatic expiration.
--   **User Role Management:**\
-    Add role-based access control (RBAC) for different user levels.
 -   **Rate Limiting and Security:**\
     Implement rate limiting on authentication and API endpoints.
 -   **Advanced Logging and Monitoring:**\
     Integrate a logging framework and monitoring tools.
+-   **Add custom parameters to api endpoints
+     Allow users to add custom parameters on their endpoints to better simulate real api calls
+-   **Implement Stripe for payment processing as well as premium payment model
+     Implement different subscription tiers which have different rate limits, gpt generated response limits, and maximum custom api endpoints 
 -   **Production Deployment:**\
     Set up CI/CD pipelines and deploy on AWS.
