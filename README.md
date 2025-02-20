@@ -1,6 +1,6 @@
 # Mockable.dev API Mocking Service
 
-**Mockable.dev** is a robust API mocking service designed for developers who need to quickly create and test custom API endpoints. The platform allows users to define endpoints with custom JSON schemas, generate mock responses (including GPT-powered responses), and validate JSON data. Built with React, Express, and MongoDB, it includes user authentication (including Google OAuth), MFA support, and comprehensive error handling—all hosted to be hosted on AWS. (Still undergoing development)
+**Mockable.dev** is a robust API mocking service designed for developers who need to quickly create and test custom API endpoints. The platform allows users to define endpoints with custom JSON schemas, generate mock responses (including GPT-powered responses), and validate JSON data. Built with React, Express, and MongoDB, it includes user authentication (including Google OAuth), MFA support, and comprehensive error handling—all to be hosted on AWS. (Still undergoing development)
 
 ---
 
@@ -180,7 +180,7 @@ Usage
     -   Navigate to the signup or login pages.
     -   Use local authentication or click the Google icon to authenticate via Google OAuth.
     -   For local login, if MFA is enabled, you will be redirected to the MFA page to verify your email OTP.
-2.  **MFA Flow (if enabled):**
+2.  **MFA Flow:**
 
     -   After a local login, you will be redirected to an MFA page where an OTP is sent to your registered email.
     -   Enter the OTP to complete the authentication process.
@@ -195,13 +195,13 @@ Usage
 Future Improvements
 -------------------
 
--   **Enhanced MFA:**\
-    Integrate Redis (or another caching solution) to securely store OTPs with automatic expiration.
--   **User Role Management:**\
-    Add role-based access control (RBAC) for different user levels.
 -   **Rate Limiting and Security:**\
     Implement rate limiting on authentication and API endpoints.
 -   **Advanced Logging and Monitoring:**\
     Integrate a logging framework and monitoring tools.
+-   **Add custom parameters to api endpoints
+     Allow users to add custom parameters on their endpoints to better simulate real api calls
+-   **Implement Stripe for payment processing as well as premium payment model
+     Implement different subscription tiers which have different rate limits, gpt generated response limits, and maximum custom api endpoints 
 -   **Production Deployment:**\
     Set up CI/CD pipelines and deploy on AWS.
