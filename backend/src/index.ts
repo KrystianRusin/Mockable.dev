@@ -12,6 +12,7 @@ import redisClient from './redisClient';
 import userRoutes from './routes/users';
 import endpointsRoutes from './routes/endpoints';
 import dynmaicRoutes from './routes/dynamic';
+import healthRoutes from './routes/health'
 
 // Initialize Environment Variables
 dotenv.config();
@@ -36,6 +37,7 @@ mongoose.connect(mongoURI)
 app.use('/api/users', userRoutes);
 app.use("/api/endpoints", endpointsRoutes);
 app.use("/api", dynmaicRoutes);
+app.use("/api/health", healthRoutes)
 
 // Start the Server
 const PORT: number = parseInt(process.env.PORT || '5000', 10);
