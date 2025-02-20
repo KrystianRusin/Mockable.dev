@@ -28,7 +28,7 @@ const LandingPage = () => {
             Welcome to Mockable.dev
           </Typography>
           <Typography variant="h5" component="p" gutterBottom>
-            Build, test, and share your API mocks in minutes.
+            Build, test, and use your API mocks in minutes.
           </Typography>
           <Box mt={4}>
             <Button
