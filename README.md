@@ -46,9 +46,6 @@ Website hosted at [mockable.dev](https://mockable.dev/)
   - Clean, responsive design built with Material UI.
   - Interactive dashboard with quick actions and detailed statistics.
 
-- **Planned Deployment:**  
-  - Hosted on AWS with scalability and performance in mind.
-
 ---
 
 ## Technology Stack
@@ -201,9 +198,9 @@ Future Improvements
     Implement rate limiting on authentication and API endpoints.
 -   **Advanced Logging and Monitoring:**\
     Integrate a logging framework and monitoring tools.
--   **Add custom parameters to api endpoints
+-   **Add custom parameters to api endpoints**\
      Allow users to add custom parameters on their endpoints to better simulate real api calls
--   **Implement Stripe for payment processing as well as premium payment model
+-   **Implement Stripe for payment processing as well as premium payment model**\
      Implement different subscription tiers which have different rate limits, gpt generated response limits, and maximum custom api endpoints 
--   **Production Deployment:**\
-    Set up CI/CD pipelines and deploy on AWS.
+-   **Endpoint Statistics and Dashboard**\
+    Store endpoint data and update dashboard to display data about endpoints (e.g avg. response time, how many endpoints are created etc.)
