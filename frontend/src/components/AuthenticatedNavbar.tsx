@@ -8,7 +8,6 @@ const AuthenticatedNavbar: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
-    window.location.reload(); // Refresh to update any global state if needed
   };
 
   return (
