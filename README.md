@@ -46,9 +46,6 @@ Website hosted at [mockable.dev](https://mockable.dev/)
   - Clean, responsive design built with Material UI.
   - Interactive dashboard with quick actions and detailed statistics.
 
-- **Planned Deployment:**  
-  - Hosted on AWS with scalability and performance in mind.
-
 ---
 
 ## Technology Stack
