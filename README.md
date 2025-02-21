@@ -2,6 +2,8 @@
 
 **Mockable.dev** is a API mocking service designed for developers who need to quickly create and test custom API endpoints. The platform allows users to define endpoints with custom JSON schemas, generate mock responses (including GPT-powered responses), and also allows users to validate JSON data. Built with React, Express, and MongoDB, hosted on AWS (Still undergoing development)
 
+Website hosted at [mockable.dev](https://mockable.dev/)
+
 ---
 
 ## Table of Contents
