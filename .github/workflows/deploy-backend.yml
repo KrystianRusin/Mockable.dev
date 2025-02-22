@@ -17,7 +17,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            cd your-repo/backend
+            cd Mockify.IO/backend
             git pull origin main
             npm install
             npm run build
