@@ -23,7 +23,14 @@ import './config/passportConfig';
 const app: Application = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://mockable.dev",
+    credentials: true,
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+  })
+);
 app.use(bodyParser.json());
 
 // Connect to MongoDB
