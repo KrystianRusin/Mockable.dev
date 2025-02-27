@@ -286,8 +286,15 @@ const Endpoints: React.FC = () => {
           <Button onClick={handleClose} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
-            {editingEndpoint ? 'Update' : 'Create'}
+          <Button
+            onClick={() => {
+              console.log("Button clicked");
+              handleSubmit();
+            }}
+            variant="contained"
+            color="primary"
+          >
+            {editingEndpoint ? "Update" : "Create"}
           </Button>
         </DialogActions>
       </Dialog>
