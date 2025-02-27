@@ -288,6 +288,7 @@ const Endpoints: React.FC = () => {
           </Button>
           <Button
             onClick={() => {
+              alert("Button Clicked!")
               console.log("Button clicked");
               handleSubmit();
             }}
