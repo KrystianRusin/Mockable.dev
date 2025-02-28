@@ -1,11 +1,14 @@
 // src/index.ts
 
+// Initialize Environment Variables
+
 
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import path from 'path';
 import redisClient from './redisClient';
 
 // Import Routes
@@ -14,8 +17,8 @@ import endpointsRoutes from './routes/endpoints';
 import dynmaicRoutes from './routes/dynamic';
 import healthRoutes from './routes/health'
 
-// Initialize Environment Variables
-dotenv.config();
+const envFile = process.env.NODE_ENV === 'production' ? '../.env.production' : '../.env';
+dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 import './config/passportConfig';
 

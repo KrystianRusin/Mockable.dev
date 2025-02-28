@@ -7,11 +7,13 @@
     "backend": "cd backend && npm run dev",
     "frontend": "cd frontend && npm run dev",
     "build": "concurrently \"npm run build:backend\" \"npm run build:frontend\"",
-    "build:backend": "cd backend && venv\\Scripts\\activate && python manage.py collectstatic --noinput && python manage.py migrate",
+    "build:backend": "cd backend && npm run build",
     "build:frontend": "cd frontend && npm run build",
     "test": "concurrently \"npm run test:backend\" \"npm run test:frontend\"",
     "test:backend": "cd backend && pytest",
-    "test:frontend": "cd frontend && npm test -- --watchAll=false"
+    "test:frontend": "cd frontend && npm test -- --watchAll=false",
+
+    "start:prod": "concurrently \"node backend/dist/index.js\" \"npx serve -s frontend/dist\""
   },
   "devDependencies": {
     "concurrently": "^7.0.0"
