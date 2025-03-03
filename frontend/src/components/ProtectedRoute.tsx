@@ -1,9 +1,14 @@
 // src/components/ProtectedRoute.tsx
+import { jwtDecode } from 'jwt-decode';
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: JSX.Element;
+}
+
+interface AuthPayload {
+  mfa: boolean;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
@@ -17,9 +22,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     window.history.replaceState({}, '', newUrl);
   }
 
-  const isAuthenticated = !!localStorage.getItem('token');
+  const token = localStorage.getItem('token')
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
 
-  if (!isAuthenticated) {
+  try {
+    const decoded = jwtDecode<AuthPayload>(token);
+    if (!decoded.mfa) {
+      return <Navigate to="/login" replace />;
+    } 
+  } catch (error) {
     return <Navigate to="/login" replace />;
   }
 
