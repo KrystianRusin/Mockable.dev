@@ -96,14 +96,11 @@ const Endpoints: React.FC = () => {
 
   const handleSubmit = async () => {
     console.log('Form Data:', formData);
-    alert("Function Triggered")
     const userSlug = localStorage.getItem('userSlug');
     if (!userSlug) {
-      alert("user slug not found in local storage")
       console.error('User slug not found in local storage');
       return;
     }
-    alert("user slug retrieved")
     try {
       if (editingEndpoint) {
         // Update existing endpoint
@@ -118,17 +115,11 @@ const Endpoints: React.FC = () => {
         );
       } else {
         const newEndpoint = await post('/api/endpoints/create', formData);
-        alert("API Request")
         setEndpoints([...endpoints, newEndpoint]);
       }
       setOpen(false);
     } catch (err: any) {
       console.error('Failed to save endpoint:', err);
-      if (err.response && err.response.data && err.response.data.message) {
-        alert(err.response.data.message);
-      } else {
-        alert('An unexpected error occurred.');
-      }
     }
     fetchEndpoints();
   };

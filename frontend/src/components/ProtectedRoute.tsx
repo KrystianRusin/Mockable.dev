@@ -29,7 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }
     const newUrl = location.pathname;
     window.history.replaceState({}, '', newUrl);
-  } else {
+  }
     const token = localStorage.getItem('token');
     if (token && !localStorage.getItem('userSlug')) {
       try {
@@ -42,7 +42,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       } catch (error) {
         console.error("Token decoding from localStorage failed: ", error);
       }
-    }
   }
 
   const isAuthenticated = !!localStorage.getItem('token');
