@@ -96,11 +96,13 @@ const Endpoints: React.FC = () => {
 
   const handleSubmit = async () => {
     console.log('Form Data:', formData);
+    alert("Function Triggered")
     const userSlug = localStorage.getItem('userSlug');
     if (!userSlug) {
       console.error('User slug not found in local storage');
       return;
     }
+    alert("user slug retrieved")
     try {
       if (editingEndpoint) {
         // Update existing endpoint
@@ -115,6 +117,7 @@ const Endpoints: React.FC = () => {
         );
       } else {
         const newEndpoint = await post('/api/endpoints/create', formData);
+        alert("API Request sent")
         setEndpoints([...endpoints, newEndpoint]);
       }
       setOpen(false);
@@ -288,8 +291,6 @@ const Endpoints: React.FC = () => {
           </Button>
           <Button
             onClick={() => {
-              alert("Button Clicked!")
-              console.log("Button clicked");
               handleSubmit();
             }}
             variant="contained"
