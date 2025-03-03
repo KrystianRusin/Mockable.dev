@@ -9,6 +9,7 @@ interface ProtectedRouteProps {
 
 interface AuthPayload {
   mfa: boolean;
+  userSlug: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
@@ -18,21 +19,23 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const tokenFromUrl = params.get('token');
   if (tokenFromUrl) {
     localStorage.setItem('token', tokenFromUrl);
+    try {
+      const decoded = jwtDecode<AuthPayload>(tokenFromUrl)
+      if (decoded.userSlug){
+        localStorage.setItem('userslug', decoded.userSlug)
+      }
+      if (!decoded.mfa) {
+        return <Navigate to="/login" replace />;
+      } 
+    } catch (error) {
+      console.error("Token decoding failed: ", error)
+    }
     const newUrl = location.pathname;
     window.history.replaceState({}, '', newUrl);
   }
 
   const token = localStorage.getItem('token')
   if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  try {
-    const decoded = jwtDecode<AuthPayload>(token);
-    if (!decoded.mfa) {
-      return <Navigate to="/login" replace />;
-    } 
-  } catch (error) {
     return <Navigate to="/login" replace />;
   }
 
