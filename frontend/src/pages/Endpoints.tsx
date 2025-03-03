@@ -99,6 +99,7 @@ const Endpoints: React.FC = () => {
     alert("Function Triggered")
     const userSlug = localStorage.getItem('userSlug');
     if (!userSlug) {
+      alert("user slug not found in local storage")
       console.error('User slug not found in local storage');
       return;
     }
@@ -117,7 +118,7 @@ const Endpoints: React.FC = () => {
         );
       } else {
         const newEndpoint = await post('/api/endpoints/create', formData);
-        alert("API Request sent")
+        alert("API Request")
         setEndpoints([...endpoints, newEndpoint]);
       }
       setOpen(false);
