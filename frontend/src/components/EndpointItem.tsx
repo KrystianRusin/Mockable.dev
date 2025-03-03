@@ -4,7 +4,6 @@ import {
   CardContent,
   Typography,
   IconButton,
-  CardActions,
   Collapse,
   Box,
 } from '@mui/material';
@@ -13,18 +12,15 @@ import { styled } from '@mui/material/styles';
 import { IconButtonProps } from '@mui/material';
 import { Endpoint } from '../types/Endpoint.ts';
 
-// Extend IconButtonProps to include the custom "expand" prop.
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
 
-// Create a styled component for the expand button.
 const ExpandMore = styled((props: ExpandMoreProps) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({
   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
   transition: theme.transitions.create('transform', {
     duration: theme.transitions.duration.shortest,
   }),
@@ -52,6 +48,7 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
         borderRadius: 2,
         transition: 'box-shadow 0.3s',
         '&:hover': { boxShadow: 6 },
+        pb: 10, // extra padding at the bottom
       }}
     >
       <CardContent onClick={handleExpandClick} sx={{ cursor: 'pointer' }}>
@@ -67,19 +64,6 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
           </Typography>
         )}
       </CardContent>
-
-      <CardActions disableSpacing>
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-
-      {/* Action Icons positioned in the top-right */}
       <Box
         sx={{
           position: 'absolute',
@@ -88,6 +72,7 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
           display: 'flex',
           flexDirection: 'column',
           gap: 1,
+          alignItems: 'center',
         }}
       >
         <IconButton color="primary" onClick={() => onEdit(endpoint)}>
@@ -96,6 +81,14 @@ const EndpointItem: React.FC<EndpointItemProps> = ({ endpoint, onEdit, onDelete 
         <IconButton color="error" onClick={() => onDelete(endpoint._id)}>
           <Delete />
         </IconButton>
+        <ExpandMore
+          expand={expanded}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon />
+        </ExpandMore>
       </Box>
 
       <Collapse in={expanded} timeout="auto" unmountOnExit>
